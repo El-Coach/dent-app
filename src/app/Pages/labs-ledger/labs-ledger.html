@@ -1,0 +1,314 @@
+<div class="labs-ledger-page">
+  <div class="page-header">
+    <h1>{{ 'LABS.TITLE' | translate }}</h1>
+    <p-button
+      [label]="'LABS.ADD_ORDER' | translate"
+      icon="pi pi-plus"
+      (onClick)="openAddDialog()"
+    ></p-button>
+  </div>
+
+  <div class="summary-cards">
+    <div class="summary-card debt">
+      <div class="summary-card-content">
+        <span class="summary-label">{{ 'LABS.TOTAL_DEBT' | translate }}</span>
+        <span class="summary-value danger">{{ totalLabBalance | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+    <div class="summary-card reserved">
+      <div class="summary-card-content">
+        <span class="summary-label">{{ 'LABS.RESERVED_BOX' | translate }}</span>
+        <span class="summary-value warning">{{ totalLabReservedBox | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <label class="filter-label">{{ 'LABS.FILTER_LAB' | translate }}</label>
+    <p-select
+      [options]="labs"
+      optionLabel="name"
+      optionValue="id"
+      [(ngModel)]="selectedLabId"
+      [placeholder]="'LABS.ALL_LABS' | translate"
+      [showClear]="true"
+      class="lab-select"
+    ></p-select>
+  </div>
+
+  <div class="ledger-card">
+    <p-tabs [value]="'active'">
+      <p-tablist>
+        <p-tab value="active">{{ 'LABS.ACTIVE_ORDERS' | translate }}</p-tab>
+        <p-tab value="archived">{{ 'LABS.ARCHIVED_ORDERS' | translate }}</p-tab>
+      </p-tablist>
+
+      <p-tabpanels>
+        <p-tabpanel value="active">
+          <p-table [value]="activeOrders" stripedRows [paginator]="true" [rows]="20">
+            <ng-template #header>
+              <tr>
+                <th>#</th>
+                <th>{{ 'LABS.DATE' | translate }}</th>
+                <th>{{ 'LABS.PATIENT' | translate }}</th>
+                <th>{{ 'LABS.LAB' | translate }}</th>
+                <th>{{ 'LABS.SERVICE' | translate }}</th>
+                <th>{{ 'LABS.UNITS' | translate }}</th>
+                <th>{{ 'LABS.UNIT_COST' | translate }}</th>
+                <th>{{ 'LABS.TOTAL_COST' | translate }}</th>
+                <th>{{ 'LABS.STATUS' | translate }}</th>
+                <th>{{ 'LABS.DOCTOR' | translate }}</th>
+                <th>{{ 'LABS.ACTIONS' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-order let-i="rowIndex">
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ order.date | date:'yyyy/MM/dd' }}</td>
+                <td>{{ order.patientName }}</td>
+                <td>{{ order.labName }}</td>
+                <td>{{ order.serviceName }}</td>
+                <td>{{ order.units }}</td>
+                <td>{{ order.unitCost | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                <td class="font-bold">{{ order.totalCost | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                <td>
+                  <p-tag
+                    [value]="order.status"
+                    [severity]="order.status === 'تم الاستلام' ? 'success' : 'warn'"
+                    styleClass="cursor-pointer"
+                    (click)="toggleStatus(order)"
+                  ></p-tag>
+                </td>
+                <td>{{ order.doctorName }}</td>
+                <td>
+                  <p-button
+                    [label]="'LABS.DELETE' | translate"
+                    severity="danger"
+                    size="small"
+                    (onClick)="removeOrder(order.id)"
+                  ></p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="11" class="text-center">{{ 'LABS.NO_ACTIVE' | translate }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          @if (selectedLabId != null) {
+            <div class="settle-actions">
+              <p-button
+                [label]="'LABS.SETTLE' | translate"
+                icon="pi pi-check-circle"
+                severity="danger"
+                (onClick)="openSettleDialog(labs.find(l => l.id === selectedLabId)!)"
+              ></p-button>
+            </div>
+          }
+        </p-tabpanel>
+
+        <p-tabpanel value="archived">
+          <p-table [value]="archivedOrders" stripedRows [paginator]="true" [rows]="20">
+            <ng-template #header>
+              <tr>
+                <th>#</th>
+                <th>{{ 'LABS.DATE' | translate }}</th>
+                <th>{{ 'LABS.PATIENT' | translate }}</th>
+                <th>{{ 'LABS.LAB' | translate }}</th>
+                <th>{{ 'LABS.SERVICE' | translate }}</th>
+                <th>{{ 'LABS.UNITS' | translate }}</th>
+                <th>{{ 'LABS.UNIT_COST' | translate }}</th>
+                <th>{{ 'LABS.TOTAL_COST' | translate }}</th>
+                <th>{{ 'LABS.STATUS' | translate }}</th>
+                <th>{{ 'LABS.DOCTOR' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-order let-i="rowIndex">
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ order.date | date:'yyyy/MM/dd' }}</td>
+                <td>{{ order.patientName }}</td>
+                <td>{{ order.labName }}</td>
+                <td>{{ order.serviceName }}</td>
+                <td>{{ order.units }}</td>
+                <td>{{ order.unitCost | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                <td class="font-bold">{{ order.totalCost | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                <td>
+                  <p-tag [value]="order.status" severity="success"></p-tag>
+                </td>
+                <td>{{ order.doctorName }}</td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="10" class="text-center">{{ 'LABS.NO_ARCHIVED' | translate }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+
+<p-dialog
+  [header]="'LABS.ADD_TITLE' | translate"
+  [(visible)]="displayAddDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  styleClass="labs-dialog"
+>
+  <div class="dialog-form">
+    <div class="form-field">
+      <label>{{ 'LABS.SELECT_PATIENT' | translate }} *</label>
+      <p-select
+        [options]="patients"
+        optionLabel="name"
+        [(ngModel)]="addForm.patient"
+        [placeholder]="'LABS.SELECT_PATIENT' | translate"
+        class="w-full"
+      ></p-select>
+    </div>
+    <div class="form-field">
+      <label>{{ 'LABS.SELECT_LAB' | translate }} *</label>
+      <p-select
+        [options]="labs"
+        optionLabel="name"
+        [(ngModel)]="addForm.lab"
+        [placeholder]="'LABS.SELECT_LAB' | translate"
+        class="w-full"
+      ></p-select>
+    </div>
+    <div class="form-field">
+      <label>{{ 'LABS.SELECT_SERVICE' | translate }} *</label>
+      <p-select
+        [options]="labServiceOptions"
+        optionLabel="serviceName"
+        [(ngModel)]="addForm.serviceOption"
+        [placeholder]="'LABS.SELECT_SERVICE' | translate"
+        class="w-full"
+      ></p-select>
+    </div>
+    <div class="form-field">
+      <label>{{ 'LABS.UNITS_COUNT' | translate }}</label>
+      <p-inputNumber
+        [(ngModel)]="addForm.units"
+        [min]="1"
+        class="w-full"
+      ></p-inputNumber>
+    </div>
+    @if (addForm.serviceOption) {
+      <div class="cost-summary">
+        <div class="cost-row">
+          <span class="cost-label">{{ 'LABS.UNIT_COST_LABEL' | translate }}</span>
+          <span class="cost-value">{{ unitCost | currency:'EGP ':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="cost-row total">
+          <span class="cost-label">{{ 'LABS.TOTAL_COST_LABEL' | translate }}</span>
+          <span class="cost-value danger">{{ totalCost | currency:'EGP ':'symbol':'1.0-0' }}</span>
+        </div>
+      </div>
+    }
+    <div class="form-field">
+      <label>{{ 'LABS.SELECT_DOCTOR' | translate }} *</label>
+      <p-select
+        [options]="doctors"
+        optionLabel="name"
+        [(ngModel)]="addForm.doctor"
+        [placeholder]="'LABS.SELECT_DOCTOR' | translate"
+        class="w-full"
+      ></p-select>
+    </div>
+  </div>
+  <ng-template #footer>
+    <div class="dialog-footer">
+      <p-button
+        [label]="'LABS.CANCEL' | translate"
+        severity="secondary"
+        (onClick)="displayAddDialog = false"
+      ></p-button>
+      <p-button
+        [label]="'LABS.ADD_ORDER_BTN' | translate"
+        severity="info"
+        (onClick)="saveOrder()"
+        [disabled]="!addForm.patient || !addForm.lab || !addForm.serviceOption || !addForm.units || addForm.units < 1 || !addForm.doctor"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [header]="'LABS.SETTLE_TITLE' | translate"
+  [(visible)]="displaySettleDialog"
+  [modal]="true"
+  [style]="{ width: '600px' }"
+  styleClass="labs-dialog settle-dialog"
+>
+  @if (settleLab) {
+    <div class="settle-header">
+      <h3 class="settle-lab-name">{{ settleLab.name }}</h3>
+      <p class="settle-subtitle">{{ 'LABS.COMPLETED_ORDERS' | translate }}</p>
+    </div>
+
+    @if (settleOrders.length > 0) {
+      <p-table [value]="settleOrders" stripedRows>
+        <ng-template #header>
+          <tr>
+            <th>{{ 'LABS.DATE' | translate }}</th>
+            <th>{{ 'LABS.PATIENT' | translate }}</th>
+            <th>{{ 'LABS.SERVICE' | translate }}</th>
+            <th>{{ 'LABS.TOTAL_COST' | translate }}</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-order>
+          <tr>
+            <td>{{ order.date | date:'yyyy/MM/dd' }}</td>
+            <td>{{ order.patientName }}</td>
+            <td>{{ order.serviceName }}</td>
+            <td class="font-bold">{{ order.totalCost | currency:'EGP ':'symbol':'1.0-0' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <p class="empty-message">{{ 'LABS.NO_ACTIVE' | translate }}</p>
+    }
+
+    <div class="settle-summary">
+      <div class="settle-stat danger">
+        <span class="settle-stat-label">{{ 'LABS.CURRENT_DEBT' | translate }}</span>
+        <span class="settle-stat-value">{{ settleLab.balance | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+      <div class="settle-stat warning">
+        <span class="settle-stat-label">{{ 'LABS.RESERVED_READY' | translate }}</span>
+        <span class="settle-stat-value">{{ settleLab.reservedBox | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+      <div class="settle-stat info">
+        <span class="settle-stat-label">{{ 'LABS.REMAINING_DEBT' | translate }}</span>
+        <span class="settle-stat-value">{{ Math.max(0, settleLab.balance - settleLab.reservedBox) | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="settle-info">
+      <i class="pi pi-info-circle"></i>
+      <p>{{ 'LABS.SETTLE_INFO' | translate }}</p>
+    </div>
+
+    <ng-template #footer>
+      <div class="dialog-footer">
+        <p-button
+          [label]="'LABS.CANCEL' | translate"
+          severity="secondary"
+          (onClick)="displaySettleDialog = false"
+        ></p-button>
+        <p-button
+          [label]="'LABS.CONFIRM_SETTLE' | translate"
+          severity="danger"
+          (onClick)="confirmSettle()"
+          [disabled]="settleLab.reservedBox <= 0"
+        ></p-button>
+      </div>
+    </ng-template>
+  }
+</p-dialog>

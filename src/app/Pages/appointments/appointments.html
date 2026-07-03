@@ -1,0 +1,248 @@
+<div class="appointments">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1>{{ 'APPOINTMENTS.TITLE' | translate }}</h1>
+    </div>
+    <p-button label="{{ 'APPOINTMENTS.ADD_NEW' | translate }}" icon="pi pi-plus" (onClick)="openNewDialog()"></p-button>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card stat-waiting">
+      <div class="stat-icon">
+        <i class="pi pi-clock"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'APPOINTMENTS.WAITING' | translate }}</span>
+        <span class="stat-value">{{ waitingCount }}</span>
+      </div>
+    </div>
+    <div class="stat-card stat-in-clinic">
+      <div class="stat-icon">
+        <i class="pi pi-user"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'APPOINTMENTS.IN_CLINIC' | translate }}</span>
+        <span class="stat-value">{{ inClinicCount }}</span>
+      </div>
+    </div>
+    <div class="stat-card stat-total">
+      <div class="stat-icon">
+        <i class="pi pi-calendar"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'APPOINTMENTS.TOTAL_DAY' | translate }}</span>
+        <span class="stat-value">{{ totalAppointmentsForDay }}</span>
+      </div>
+    </div>
+    <div class="stat-card stat-date">
+      <div class="stat-icon">
+        <i class="pi pi-calendar-plus"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'APPOINTMENTS.SELECT_DAY' | translate }}</span>
+        <p-datepicker
+          [(ngModel)]="filterDate"
+          (onSelect)="onFilterDateChange()"
+          dateFormat="yy/mm/dd"
+          [showIcon]="true"
+          class="w-full"
+          styleClass="w-full date-filter"
+        ></p-datepicker>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctor Filter -->
+  <div class="filter-bar">
+    <p-select
+      [options]="doctors"
+      optionLabel="name"
+      optionValue="id"
+      [(ngModel)]="selectedDoctorId"
+      (onChange)="filterByDoctor($event.value)"
+      placeholder="{{ 'APPOINTMENTS.ALL_DOCTORS' | translate }}"
+      [showClear]="true"
+      styleClass="w-full"
+    ></p-select>
+  </div>
+
+  <!-- Appointments Table -->
+  <div class="table-card">
+    <p-table [value]="filteredAppointments" stripedRows>
+      <ng-template #header>
+        <tr>
+          <th>{{ 'APPOINTMENTS.TICKET' | translate }}</th>
+          <th>{{ 'APPOINTMENTS.PATIENT' | translate }}</th>
+          <th>{{ 'APPOINTMENTS.DATE' | translate }}</th>
+          <th>{{ 'APPOINTMENTS.TIME' | translate }}</th>
+          <th>{{ 'APPOINTMENTS.SERVICES_STATUS' | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-appointment>
+        <tr>
+          <td><span class="ticket-number">{{ appointment.ticketNumber }}</span></td>
+          <td class="patient-name">{{ appointment.patientName }}</td>
+          <td>{{ appointment.appointmentDate | date: 'yyyy/MM/dd' }}</td>
+          <td><span class="time-badge">{{ appointment.timeSlot }}</span></td>
+          <td>
+            <div class="services-list">
+              @for (svc of appointment.services; track $index) {
+                <div class="service-item">
+                  <div class="service-main">
+                    <p-tag [value]="svc.serviceName" severity="info" styleClass="mr-1" />
+                    <p-select
+                      [options]="doctors"
+                      optionLabel="name"
+                      optionValue="id"
+                      [(ngModel)]="svc.doctorId"
+                      (onChange)="changeServiceDoctor(appointment.id, $index, $event.value)"
+                      placeholder="{{ 'APPOINTMENTS.DOCTOR' | translate }}"
+                      styleClass="p-multiselect-sm"
+                      class="doctor-inline-select"
+                    ></p-select>
+                    <p-tag
+                      [value]="svc.status"
+                      [severity]="getStatusSeverity(svc.status)"
+                      styleClass="mr-2"
+                    />
+                  </div>
+                  <div class="service-actions">
+                    @if (svc.status === 'انتظار') {
+                      <p-button label="{{ 'APPOINTMENTS.START' | translate }}" severity="info" size="small" (onClick)="changeServiceStatus(appointment.id, $index, 'داخل للدكتور')"></p-button>
+                      <p-button label="{{ 'APPOINTMENTS.CANCEL' | translate }}" severity="danger" size="small" (onClick)="cancelService(appointment.id, $index)"></p-button>
+                    }
+                    @if (svc.status === 'داخل للدكتور') {
+                      <p-button label="{{ 'APPOINTMENTS.FINISH' | translate }}" severity="success" size="small" (onClick)="changeServiceStatus(appointment.id, $index, 'انتهى')"></p-button>
+                      <p-button label="{{ 'APPOINTMENTS.CANCEL' | translate }}" severity="danger" size="small" (onClick)="cancelService(appointment.id, $index)"></p-button>
+                    }
+                    @if (svc.status === 'انتهى') {
+                      <span class="completed-label">{{ 'APPOINTMENTS.PAID_LATER' | translate }}</span>
+                    }
+                    @if (appointment.services.length > 1 && svc.status !== 'انتهى') {
+                      <p-button icon="pi pi-trash" severity="danger" rounded size="small" (onClick)="removeServiceFromAppointment(appointment.id, $index)"></p-button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="5" class="empty-message">{{ 'APPOINTMENTS.NO_APPOINTMENTS' | translate }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- Add/Edit Dialog -->
+<p-dialog
+  [header]="isEditing ? ('APPOINTMENTS.EDIT_TITLE' | translate) : ('APPOINTMENTS.ADD_TITLE' | translate)"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [style]="{ width: '550px' }"
+>
+  <form [formGroup]="appointmentForm" (ngSubmit)="saveAppointment()">
+    <div class="field mb-3">
+      <label for="patientId">{{ 'APPOINTMENTS.PATIENT_NAME' | translate }}</label>
+      <p-select
+        id="patientId"
+        [options]="patients"
+        optionLabel="name"
+        optionValue="id"
+        formControlName="patientId"
+        placeholder="{{ 'APPOINTMENTS.SELECT_PATIENT' | translate }}"
+        class="w-full"
+        styleClass="w-full"
+      ></p-select>
+      @if (appointmentForm.get('patientId')?.invalid && appointmentForm.get('patientId')?.touched) {
+        <small class="field-error">{{ 'APPOINTMENTS.PLEASE_SELECT_PATIENT' | translate }}</small>
+      }
+    </div>
+
+    <div class="field mb-3">
+      <label for="appointmentDate">{{ 'APPOINTMENTS.PICK_DATE' | translate }}</label>
+      <p-datepicker
+        id="appointmentDate"
+        formControlName="appointmentDate"
+        dateFormat="yy/mm/dd"
+        [showIcon]="true"
+        styleClass="w-full"
+      ></p-datepicker>
+    </div>
+
+    <div class="field mb-3">
+      <label for="timeSlot">{{ 'APPOINTMENTS.PICK_TIME' | translate }}</label>
+      <p-select
+        id="timeSlot"
+        [options]="availableTimeSlots"
+        formControlName="timeSlot"
+        placeholder="{{ 'APPOINTMENTS.SELECT_TIME' | translate }}"
+        class="w-full"
+        styleClass="w-full"
+      ></p-select>
+      @if (availableTimeSlots.length === 0 && appointmentForm.get('appointmentDate')?.value) {
+        <small class="field-error">{{ 'APPOINTMENTS.NO_SLOTS' | translate }}</small>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label>{{ 'APPOINTMENTS.REQUIRED_SERVICES' | translate }}</label>
+      <div formArrayName="services">
+        @for (service of servicesFormArray.controls; track $index) {
+          <div [formGroupName]="$index" class="service-row">
+            <p-select
+              [options]="doctors"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="doctorId"
+              placeholder="{{ 'APPOINTMENTS.DOCTOR' | translate }}"
+              class="flex-1"
+              styleClass="w-full"
+            ></p-select>
+            <p-select
+              [options]="serviceOptions"
+              optionLabel="name"
+              optionValue="name"
+              formControlName="serviceName"
+              placeholder="{{ 'APPOINTMENTS.SERVICE' | translate }}"
+              class="flex-1"
+              styleClass="w-full"
+            ></p-select>
+            <span class="service-price">
+              {{ getServicePrice(service.get('serviceName')?.value) | currency:'EGP ':'symbol':'1.0-0' }}
+            </span>
+            @if ($index > 0 || servicesFormArray.controls.length > 1) {
+              <p-button icon="pi pi-trash" severity="danger" size="small" (onClick)="removeServiceRow($index)"></p-button>
+            }
+          </div>
+        }
+      </div>
+      <p-button label="{{ 'APPOINTMENTS.ADD_SERVICE' | translate }}" severity="secondary" size="small" (onClick)="addServiceRow()"></p-button>
+    </div>
+
+    <div class="field mb-3">
+      <div class="emergency-toggle">
+        <p-toggleswitch id="isEmergency" formControlName="isEmergency" (onChange)="onEmergencyToggle()"></p-toggleswitch>
+        <label for="isEmergency">{{ 'APPOINTMENTS.EMERGENCY' | translate }}</label>
+      </div>
+    </div>
+
+    <div class="field mb-3">
+      <label for="notes">{{ 'APPOINTMENTS.NOTES' | translate }}</label>
+      <input id="notes" type="text" pInputText formControlName="notes" class="w-full" />
+    </div>
+
+    <div class="dialog-footer">
+      <span class="total-display">{{ 'APPOINTMENTS.TOTAL_SERVICES' | translate }} {{ getServicesTotal() | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      <div class="footer-actions">
+        <p-button label="{{ 'COMMON.CANCEL' | translate }}" severity="secondary" (onClick)="displayDialog = false"></p-button>
+        <p-button [label]="isEditing ? ('APPOINTMENTS.UPDATE' | translate) : ('APPOINTMENTS.BOOK' | translate)" type="submit" [disabled]="appointmentForm.invalid"></p-button>
+      </div>
+    </div>
+  </form>
+</p-dialog>

@@ -1,0 +1,154 @@
+<div class="dashboard">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1>{{ 'DASHBOARD.TITLE' | translate }}</h1>
+      <p class="page-subtitle">{{ todayDate | date:'yyyy/MM/dd' }}</p>
+    </div>
+  </div>
+
+  <!-- Current & Next Patient -->
+  <div class="patient-cards">
+    <!-- Current Patient -->
+    <div class="patient-card current">
+      <div class="patient-card-icon">
+        <mat-icon>person</mat-icon>
+      </div>
+      <div class="patient-card-content">
+        <span class="patient-card-label">{{ 'DASHBOARD.CURRENT_PATIENT' | translate }}</span>
+        @if (currentPatient) {
+          <span class="patient-card-name">{{ currentPatient.patientName }}</span>
+          <div class="patient-card-meta">
+            <span class="ticket-badge current">{{ 'DASHBOARD.TICKET' | translate }}{{ currentPatient.ticketNumber }}</span>
+            <span class="time-badge">{{ currentPatient.timeSlot }}</span>
+          </div>
+        } @else {
+          <span class="patient-card-empty">{{ 'DASHBOARD.NO_PATIENT' | translate }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Next Patient -->
+    <div class="patient-card next">
+      <div class="patient-card-icon waiting">
+        <mat-icon>hourglass_empty</mat-icon>
+      </div>
+      <div class="patient-card-content">
+        <span class="patient-card-label">{{ 'DASHBOARD.NEXT_PATIENT' | translate }}</span>
+        @if (nextPatient) {
+          <span class="patient-card-name">{{ nextPatient.patientName }}</span>
+          <div class="patient-card-meta">
+            <span class="ticket-badge waiting">{{ 'DASHBOARD.TICKET' | translate }}{{ nextPatient.ticketNumber }}</span>
+            <span class="time-badge">{{ nextPatient.timeSlot }}</span>
+          </div>
+        } @else {
+          <span class="patient-card-empty">{{ 'DASHBOARD.NO_WAITING' | translate }}</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <!-- Total Patients -->
+    <div class="stat-card">
+      <div class="stat-icon primary">
+        <mat-icon>people</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'DASHBOARD.TOTAL_PATIENTS' | translate }}</span>
+        <span class="stat-value">{{ totalPatients }}</span>
+      </div>
+    </div>
+
+    <!-- Total Doctors -->
+    <div class="stat-card">
+      <div class="stat-icon teal">
+        <mat-icon>medical_services</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'DASHBOARD.TOTAL_DOCTORS' | translate }}</span>
+        <span class="stat-value">{{ totalDoctors }}</span>
+      </div>
+    </div>
+
+    <!-- Today's Appointments -->
+    <div class="stat-card">
+      <div class="stat-icon info">
+        <mat-icon>calendar_today</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'DASHBOARD.TODAY_APPOINTMENTS' | translate }}</span>
+        <span class="stat-value">{{ todayAppointments.length }}</span>
+      </div>
+    </div>
+
+    <!-- Waiting -->
+    <div class="stat-card">
+      <div class="stat-icon warning">
+        <mat-icon>pending</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'DASHBOARD.WAITING' | translate }}</span>
+        <span class="stat-value warning">{{ waitingCount }}</span>
+      </div>
+    </div>
+
+    <!-- In Clinic -->
+    <div class="stat-card">
+      <div class="stat-icon primary">
+        <mat-icon>stethoscope</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'DASHBOARD.IN_CLINIC' | translate }}</span>
+        <span class="stat-value primary">{{ inClinicCount }}</span>
+      </div>
+    </div>
+
+    <!-- Completed -->
+    <div class="stat-card">
+      <div class="stat-icon success">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'DASHBOARD.COMPLETED' | translate }}</span>
+        <span class="stat-value success">{{ completedCount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Financial Summary -->
+  <div class="financial-grid">
+    <div class="financial-card">
+      <div class="financial-icon blue">
+        <mat-icon>savings</mat-icon>
+      </div>
+      <div class="financial-info">
+        <span class="financial-label">{{ 'DASHBOARD.SAFE_OPENING' | translate }}</span>
+        <span class="financial-value blue">{{ remainingFloat | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="financial-card">
+      <div class="financial-icon green">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="financial-info">
+        <span class="financial-label">{{ 'DASHBOARD.SAFE_TOTAL' | translate }}</span>
+        <span class="financial-value green">{{ (remainingFloat + netProfit) | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="financial-card">
+      <div class="financial-icon" [class.green]="netProfit >= 0" [class.red]="netProfit < 0">
+        <mat-icon>trending_up</mat-icon>
+      </div>
+      <div class="financial-info">
+        <span class="financial-label">{{ 'DASHBOARD.NET_PROFIT' | translate }}</span>
+        <span class="financial-value" [class.green]="netProfit >= 0" [class.red]="netProfit < 0">
+          {{ netProfit | currency:'EGP ':'symbol':'1.0-0' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

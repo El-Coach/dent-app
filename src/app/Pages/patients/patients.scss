@@ -1,0 +1,546 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.patients-page {
+  @include page-container;
+}
+
+.page-header {
+  @include page-header;
+  margin-bottom: $space-md;
+
+  &__title h2 {
+    margin: 0;
+    font-size: $fs-2xl;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-sm;
+  }
+}
+
+.patients-card {
+  @include card-base;
+  overflow: hidden;
+
+  :host ::ng-deep .patients-table {
+    @include table-enhanced;
+
+    .p-datatable-thead > tr > th {
+      background: var(--surface-50);
+      color: var(--text-secondary);
+      font-weight: $fw-semibold;
+      font-size: $fs-xs;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .p-datatable-tbody > tr {
+      transition: background $transition-fast;
+
+      &:hover {
+        background: var(--surface-hover);
+      }
+    }
+  }
+}
+
+.patient-row {
+  .patient-id {
+    font-weight: $fw-semibold;
+    color: var(--text-secondary);
+    font-size: $fs-sm;
+  }
+
+  .patient-name {
+    font-weight: $fw-semibold;
+    color: var(--text-primary);
+  }
+
+  .patient-phone {
+    font-family: $font-mono;
+    font-size: $fs-sm;
+    direction: ltr;
+    text-align: left;
+  }
+
+  .patient-notes {
+    max-width: 200px;
+    @include text-truncate;
+    color: var(--text-secondary);
+    font-size: $fs-sm;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: $space-xs;
+  flex-wrap: nowrap;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-xl 0;
+  color: var(--text-secondary);
+  gap: $space-sm;
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-full;
+    background: var(--surface-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $fs-2xl;
+    color: var(--text-tertiary);
+  }
+
+  span {
+    font-size: $fs-sm;
+    font-weight: $fw-medium;
+  }
+}
+
+// Dialog Styles
+:host ::ng-deep {
+  .patient-dialog,
+  .statement-dialog,
+  .lab-payment-dialog {
+    .p-dialog {
+      border-radius: $radius-lg !important;
+      overflow: hidden;
+      box-shadow: $shadow-lg;
+    }
+
+    .p-dialog-header {
+      padding: $space-md $space-lg;
+      border-bottom: 1px solid var(--surface-border);
+      background: var(--surface-0);
+
+      .p-dialog-title {
+        font-weight: $fw-bold;
+        font-size: $fs-lg;
+        color: var(--text-primary);
+      }
+    }
+
+    .p-dialog-content {
+      padding: 0;
+      max-height: 75vh;
+      overflow-y: auto;
+      @include custom-scrollbar;
+    }
+
+    .p-dialog-footer {
+      padding: $space $space-lg;
+      border-top: 1px solid var(--surface-border);
+      background: var(--surface-0);
+      display: flex;
+      justify-content: flex-end;
+      gap: $space-sm;
+    }
+  }
+}
+
+.patient-form {
+  padding: $space-lg;
+}
+
+.form-section {
+  margin-bottom: $space;
+}
+
+.form-section-title {
+  font-size: $fs-base;
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+  margin: 0 0 $space-md 0;
+  padding-bottom: $space-sm;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.form-divider {
+  height: 1px;
+  background: var(--surface-border);
+  margin: $space-md 0;
+}
+
+.form-field {
+  margin-bottom: $space-md;
+
+  &--half {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: $space-md;
+}
+
+.form-label {
+  display: block;
+  font-size: $fs-sm;
+  font-weight: $fw-semibold;
+  color: var(--text-secondary);
+  margin-bottom: $space-xs;
+}
+
+.form-input {
+  width: 100%;
+  border-radius: $radius !important;
+  border-color: var(--surface-border) !important;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:focus {
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+  }
+}
+
+.form-error {
+  display: block;
+  font-size: $fs-xs;
+  color: $danger;
+  margin-top: $space-xs;
+}
+
+.form-value {
+  font-size: $fs-lg;
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+  padding: $space-sm 0;
+}
+
+// Services
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.service-row {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.service-select {
+  flex: 1;
+  min-width: 0;
+
+  :host ::ng-deep .p-select {
+    width: 100%;
+    border-radius: $radius !important;
+  }
+}
+
+.service-price {
+  font-weight: $fw-bold;
+  color: var(--text-primary);
+  white-space: nowrap;
+  font-size: $fs-sm;
+  min-width: 80px;
+  text-align: center;
+}
+
+.service-remove {
+  flex-shrink: 0;
+}
+
+.add-service-btn {
+  margin-top: $space-sm;
+  color: var(--primary-500) !important;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-sm;
+  padding-top: $space-md;
+  border-top: 1px solid var(--surface-border);
+}
+
+// Statement Dialog
+.statement-content {
+  padding: $space-lg;
+}
+
+.patient-info-card {
+  @include card-base;
+  padding: $space-md;
+  margin-bottom: $space-md;
+  display: flex;
+  gap: $space-lg;
+}
+
+.patient-info-item {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+
+  .info-label {
+    font-size: $fs-sm;
+    color: var(--text-secondary);
+    font-weight: $fw-medium;
+  }
+
+  .info-value {
+    font-size: $fs-base;
+    color: var(--text-primary);
+    font-weight: $fw-semibold;
+  }
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-md;
+  margin-bottom: $space-lg;
+}
+
+.stat-card {
+  @include card-base;
+  padding: $space-md;
+  text-align: center;
+
+  &--billed {
+    border-top: 3px solid var(--primary-500);
+  }
+
+  &--paid {
+    border-top: 3px solid $success;
+  }
+
+  &--remaining {
+    border-top: 3px solid $danger;
+  }
+
+  &__label {
+    font-size: $fs-xs;
+    color: var(--text-secondary);
+    font-weight: $fw-medium;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: $space-xs;
+  }
+
+  &__value {
+    font-size: $fs-xl;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+
+    &--paid {
+      color: $success;
+    }
+
+    &--remaining {
+      color: $danger;
+    }
+  }
+}
+
+.invoice-block {
+  margin-bottom: $space-lg;
+  padding-bottom: $space-md;
+  border-bottom: 1px solid var(--surface-border);
+
+  &:last-of-type {
+    border-bottom: none;
+    margin-bottom: $space-md;
+  }
+}
+
+.invoice-header {
+  font-size: $fs-sm;
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+  margin: 0 0 $space-sm 0;
+}
+
+:host ::ng-deep .invoice-table,
+:host ::ng-deep .lab-table,
+:host ::ng-deep .lab-payments-table {
+  @include table-enhanced;
+
+  .p-datatable-thead > tr > th {
+    font-size: $fs-xs;
+  }
+}
+
+.payment-history {
+  margin-top: $space-sm;
+  padding: $space-sm;
+  background: var(--surface-50);
+  border-radius: $radius;
+  border: 1px solid var(--surface-border);
+
+  &__title {
+    display: block;
+    font-size: $fs-xs;
+    color: var(--text-secondary);
+    margin-bottom: $space-xs;
+  }
+}
+
+.payment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-xs $space-sm;
+  border-radius: $radius-sm;
+  margin-bottom: $space-xs;
+  background: var(--success-bg);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &__date {
+    font-size: $fs-xs;
+    color: var(--text-secondary);
+  }
+
+  &__amount {
+    font-weight: $fw-bold;
+    color: $success;
+    font-size: $fs-sm;
+  }
+}
+
+.invoice-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-sm 0;
+  font-size: $fs-sm;
+  gap: $space-md;
+  flex-wrap: wrap;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    color: var(--text-secondary);
+
+    strong {
+      color: var(--text-primary);
+    }
+
+    &--paid strong {
+      color: $success;
+    }
+
+    &--remaining strong {
+      color: $danger;
+    }
+  }
+}
+
+.amount-cell {
+  font-weight: $fw-bold;
+  color: $danger;
+}
+
+.section-heading {
+  margin: $space-lg 0 $space-md 0;
+
+  h5 {
+    font-size: $fs-lg;
+    font-weight: $fw-semibold;
+    color: var(--text-primary);
+    margin: 0;
+    padding-bottom: $space-sm;
+    border-bottom: 2px solid var(--primary-500);
+    display: inline-block;
+  }
+}
+
+.sub-heading {
+  font-size: $fs-sm;
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+  margin: $space-md 0 $space-sm 0;
+}
+
+.lab-payment-action {
+  margin: $space-md 0;
+}
+
+.lab-payment-form {
+  padding: $space-lg;
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.patients-page {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: $space-sm;
+    align-items: flex-start;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-info-card {
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: $space-xs;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .service-row {
+    flex-wrap: wrap;
+  }
+
+  .service-select {
+    flex: 1 1 100%;
+  }
+
+  .invoice-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-xs;
+  }
+}

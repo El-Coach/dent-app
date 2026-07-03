@@ -1,0 +1,224 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 $space-md;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-border);
+  gap: $space-md;
+
+  &.rtl {
+    flex-direction: row-reverse;
+  }
+
+  &.ltr {
+    flex-direction: row;
+  }
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  flex-shrink: 0;
+}
+
+.live-clock {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-xs $space-sm;
+  border-radius: $radius-md;
+  background: var(--surface-50);
+  color: var(--text-secondary);
+  font-size: $fs-sm;
+}
+
+.clock-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--primary-500);
+}
+
+.clock-text {
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.date-text {
+  color: var(--text-muted);
+  padding-inline-start: $space-xs;
+  border-inline-start: 1px solid var(--surface-border);
+}
+
+.navbar-center {
+  flex: 1;
+  max-width: 480px;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  inset-inline-start: 12px;
+}
+
+.search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 $space-md;
+  padding-inline-start: 40px;
+  border: 1px solid var(--surface-border);
+  border-radius: $radius-full;
+  background: var(--surface-50);
+  color: var(--text-primary);
+  font-size: $fs-sm;
+  outline: none;
+  transition: all $transition-fast;
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 59, 130, 246), 0.1);
+    background: var(--surface-0);
+  }
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  background: var(--surface-0);
+  border: 1px solid var(--surface-border);
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  cursor: pointer;
+  transition: background $transition-fast;
+  border-bottom: 1px solid var(--surface-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.search-item-type {
+  font-size: $fs-xs;
+  font-weight: $fw-semibold;
+  color: var(--primary-500);
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  background: var(--primary-50);
+  white-space: nowrap;
+}
+
+.search-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.search-item-label {
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-item-sublabel {
+  font-size: $fs-xs;
+  color: var(--text-muted);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  flex-shrink: 0;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  padding: $space-xs $space-sm;
+  border: 1px solid var(--surface-border);
+  border-radius: $radius-md;
+  background: var(--surface-0);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all $transition-fast;
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary-300);
+    color: var(--primary-500);
+  }
+}
+
+.control-label {
+  font-size: $fs-xs;
+  font-weight: $fw-bold;
+  letter-spacing: 0.5px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

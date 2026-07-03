@@ -1,0 +1,63 @@
+<header class="navbar" [class.rtl]="isRtl" [class.ltr]="!isRtl">
+  <!-- Left: Live Clock -->
+  <div class="navbar-left">
+    <div class="live-clock">
+      <mat-icon class="clock-icon">schedule</mat-icon>
+      <span class="clock-text">{{ liveTime | async | date:'hh:mm:ss a' }}</span>
+      <span class="date-text">{{ liveTime | async | date:'yyyy/MM/dd' }}</span>
+    </div>
+  </div>
+
+  <!-- Center: Search -->
+  <div class="navbar-center">
+    <div class="search-container">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        class="search-input"
+        [placeholder]="'NAV.SEARCH_PLACEHOLDER' | translate"
+        [(ngModel)]="searchQuery"
+        (input)="onSearchInput()"
+        (focus)="onSearchFocus()"
+        (blur)="onSearchBlur()"
+      />
+      @if (showSearchResults && searchResults.length > 0) {
+        <div class="search-dropdown">
+          @for (result of searchResults; track result.label + result.type) {
+            <div class="search-item" (mousedown)="selectResult(result)">
+              <span class="search-item-type">{{ result.type }}</span>
+              <div class="search-item-info">
+                <span class="search-item-label">{{ result.label }}</span>
+                <span class="search-item-sublabel">{{ result.subLabel }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Right: Controls -->
+  <div class="navbar-right">
+    <!-- Language Toggle -->
+    <button
+      class="control-btn"
+      (click)="toggleLanguage()"
+      [pTooltip]="currentLang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'"
+      tooltipPosition="bottom"
+    >
+      <mat-icon>translate</mat-icon>
+      <span class="control-label">{{ currentLang === 'ar' ? 'EN' : 'AR' }}</span>
+    </button>
+
+    <!-- Theme Toggle -->
+    <button
+      class="control-btn"
+      (click)="toggleTheme()"
+      [pTooltip]="isDark ? 'Switch to Light Mode' : 'التبديل إلى الوضع الداكن'"
+      tooltipPosition="bottom"
+    >
+      <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+  </div>
+</header>

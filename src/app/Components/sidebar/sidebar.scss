@@ -1,0 +1,160 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+:host {
+  display: block;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  inset-inline-start: 0;
+}
+
+.sidebar {
+  width: $sidebar-collapsed;
+  height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  transition: width $transition-slow cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-shadow: $shadow-lg;
+
+  &.expanded {
+    width: $sidebar-expanded;
+  }
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+  padding: $space-sm $space;
+  height: 64px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, var(--primary-500), var(--teal-500));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    color: white;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.logo-text {
+  font-size: $fs-xl;
+  font-weight: $fw-bold;
+  color: white;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity $transition;
+
+  .expanded & {
+    opacity: 1;
+  }
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: $space-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-bottom {
+  padding: $space-sm;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space;
+  border-radius: $radius-md;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  transition: all $transition-fast;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 44px;
+
+  &:hover {
+    background: var(--sidebar-hover);
+    color: white;
+  }
+
+  &.active {
+    background: var(--sidebar-active);
+    color: var(--sidebar-text-active);
+
+    .nav-icon {
+      color: var(--primary-400);
+    }
+  }
+}
+
+.nav-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  color: inherit;
+  transition: color $transition-fast;
+}
+
+.nav-label {
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+  color: inherit;
+  opacity: 0;
+  transition: opacity $transition;
+  white-space: nowrap;
+
+  .expanded & {
+    opacity: 1;
+  }
+}
+
+// Tooltip styling for collapsed state
+:host ::ng-deep {
+  .p-tooltip {
+    .p-tooltip-text {
+      background: var(--sidebar-bg);
+      color: white;
+      font-size: $fs-sm;
+      padding: $space-xs $space-sm;
+      border-radius: $radius-sm;
+    }
+
+    &.p-tooltip-right {
+      .p-tooltip-arrow {
+        border-right-color: var(--sidebar-bg);
+      }
+    }
+  }
+}
+
+// Scrollbar
+.sidebar-nav {
+  @include custom-scrollbar;
+}

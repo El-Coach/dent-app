@@ -1,0 +1,287 @@
+<div class="doctors-page">
+  <div class="page-header">
+    <h1>{{ 'DOCTORS.TITLE' | translate }}</h1>
+  </div>
+
+  <p-table
+    [value]="filteredDoctors"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    stripedRows
+    styleClass="doctors-table"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 60px">#</th>
+        <th>{{ 'DOCTORS.NAME' | translate }}</th>
+        <th>{{ 'DOCTORS.SPECIALTY' | translate }}</th>
+        <th>{{ 'DOCTORS.PHONE' | translate }}</th>
+        <th>{{ 'DOCTORS.WORK_DAYS' | translate }}</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-doctor>
+      <tr class="doctor-row" (click)="openProfile(doctor)">
+        <td class="id-cell">{{ doctor.id }}</td>
+        <td class="name-cell">
+          <span class="doctor-name">{{ doctor.name }}</span>
+        </td>
+        <td>
+          <p-tag [value]="doctor.specialty" severity="info" styleClass="specialty-tag" />
+        </td>
+        <td class="phone-cell">{{ doctor.phone }}</td>
+        <td>
+          <div class="working-days">
+            @for (wd of doctor.workingDays; track wd.day) {
+              <span class="day-badge">
+                <strong>{{ wd.day }}</strong>: {{ wd.hours }}
+              </span>
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="empty-state">
+          <div class="empty-content">
+            <i class="pi pi-users empty-icon"></i>
+            <span>{{ 'DOCTORS.NO_DOCTORS' | translate }}</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [header]="'DOCTORS.PROFILE' | translate"
+  [(visible)]="displayProfile"
+  [modal]="true"
+  [style]="{ width: '750px' }"
+  styleClass="doctor-profile-dialog"
+>
+  @if (selectedDoctor) {
+    <p-tabs [value]="'info'">
+      <p-tablist>
+        <p-tab value="info">{{ 'DOCTORS.INFO_TAB' | translate }}</p-tab>
+        <p-tab value="payroll">{{ 'DOCTORS.PAYROLL_TAB' | translate }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="info">
+          <div class="info-section">
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">{{ 'DOCTORS.LABEL_NAME' | translate }}</span>
+                <span class="info-value">{{ selectedDoctor.name }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ 'DOCTORS.LABEL_SPECIALTY' | translate }}</span>
+                <span class="info-value">{{ selectedDoctor.specialty }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ 'DOCTORS.LABEL_PHONE' | translate }}</span>
+                <span class="info-value">{{ selectedDoctor.phone }}</span>
+              </div>
+            </div>
+
+            <h5 class="section-title">{{ 'DOCTORS.WORK_DAYS_HEADING' | translate }}</h5>
+            <div class="working-days">
+              @for (wd of selectedDoctor.workingDays; track wd.day) {
+                <span class="day-badge">
+                  <strong>{{ wd.day }}</strong>: {{ wd.hours }}
+                </span>
+              }
+            </div>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="payroll">
+          <div class="stats-grid">
+            <div class="stat-card stat-services">
+              <div class="stat-icon">
+                <i class="pi pi-list"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">{{ 'DOCTORS.SERVICES_COUNT' | translate }}</div>
+                <div class="stat-value">{{ doctorServices.length }}</div>
+              </div>
+            </div>
+            <div class="stat-card stat-revenue">
+              <div class="stat-icon">
+                <i class="pi pi-dollar"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">{{ 'DOCTORS.REVENUE' | translate }}</div>
+                <div class="stat-value revenue-value">{{ totalRevenue | currency:'EGP ':'symbol':'1.0-0' }}</div>
+              </div>
+            </div>
+            <div class="stat-card stat-share">
+              <div class="stat-icon">
+                <i class="pi pi-percentage"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">{{ 'DOCTORS.SHARE' | translate:{ pct: selectedDoctor.doctorSharePercentage } }}</div>
+                <div class="stat-value share-value">{{ doctorShare | currency:'EGP ':'symbol':'1.0-0' }}</div>
+              </div>
+            </div>
+          </div>
+
+          @if (doctorShare > 0 && !payoutDone) {
+            <div class="settle-actions">
+              <p-button
+                [label]="'DOCTORS.SETTLE' | translate"
+                icon="pi pi-dollar"
+                severity="success"
+                (onClick)="doctorPayout(selectedDoctor)"
+              ></p-button>
+            </div>
+          }
+          @if (payoutDone) {
+            <p-message severity="success" [text]="'DOCTORS.SETTLE_SUCCESS' | translate" class="settle-message"></p-message>
+          }
+
+          <div class="services-table-container">
+            <p-table [value]="doctorServices" stripedRows styleClass="services-table">
+              <ng-template #header>
+                <tr>
+                  <th>{{ 'DOCTORS.DATE' | translate }}</th>
+                  <th>{{ 'DOCTORS.PATIENT' | translate }}</th>
+                  <th>{{ 'DOCTORS.SERVICE' | translate }}</th>
+                  <th>{{ 'DOCTORS.PRICE' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-svc>
+                <tr>
+                  <td>{{ svc.invoiceDate | date: 'yyyy/MM/dd' }}</td>
+                  <td>
+                    <a class="patient-link" (click)="openPatientInfo(svc.patientId)">
+                      {{ svc.patientName }}
+                    </a>
+                  </td>
+                  <td>{{ svc.serviceName }}</td>
+                  <td class="price-cell">{{ svc.price | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+
+    <div class="dialog-footer">
+      <p-button [label]="'DOCTORS.CLOSE' | translate" severity="secondary" (onClick)="displayProfile = false"></p-button>
+    </div>
+  }
+</p-dialog>
+
+<p-dialog
+  [header]="'DOCTORS.PATIENT_INFO' | translate"
+  [(visible)]="displayPatientInfo"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+  styleClass="patient-info-dialog"
+>
+  @if (selectedPatient) {
+    <div class="patient-details">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">{{ 'DOCTORS.LABEL_NAME' | translate }}</span>
+          <span class="info-value">{{ selectedPatient.name }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'DOCTORS.LABEL_AGE' | translate }}</span>
+          <span class="info-value">{{ selectedPatient.age }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'DOCTORS.LABEL_PHONE' | translate }}</span>
+          <span class="info-value">{{ selectedPatient.phone }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'DOCTORS.LABEL_REG_DATE' | translate }}</span>
+          <span class="info-value">{{ selectedPatient.registrationDate | date: 'yyyy/MM/dd' }}</span>
+        </div>
+      </div>
+      @if (selectedPatient.notes) {
+        <div class="medical-notes">
+          <strong>{{ 'DOCTORS.MEDICAL_NOTES' | translate }}</strong>
+          <p>{{ selectedPatient.notes }}</p>
+        </div>
+      }
+    </div>
+
+    <h5 class="section-title">{{ 'DOCTORS.FINANCIAL_HISTORY' | translate }}</h5>
+    <div class="stats-grid">
+      <div class="stat-card stat-total">
+        <div class="stat-icon">
+          <i class="pi pi-file"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">{{ 'DOCTORS.TOTAL_BILLED' | translate }}</div>
+          <div class="stat-value">{{ patientTotalBilled | currency:'EGP ':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+      <div class="stat-card stat-paid">
+        <div class="stat-icon">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">{{ 'DOCTORS.PAID' | translate }}</div>
+          <div class="stat-value paid-value">{{ patientTotalPaid | currency:'EGP ':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+      <div class="stat-card stat-remaining">
+        <div class="stat-icon">
+          <i class="pi pi-exclamation-circle"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">{{ 'DOCTORS.REMAINING' | translate }}</div>
+          <div class="stat-value remaining-value">{{ patientTotalDebt | currency:'EGP ':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="invoices-list">
+      @for (inv of patientInvoices; track inv.id) {
+        <div class="invoice-card">
+          <div class="invoice-header">
+            <span class="invoice-title">{{ 'DOCTORS.INVOICE' | translate:{ id: inv.id } }} {{ inv.date | date: 'yyyy/MM/dd' }}</span>
+            <span class="invoice-status" [class.paid]="inv.status === 'مدفوع بالكامل'" [class.partial]="inv.status !== 'مدفوع بالكامل'">
+              {{ inv.status }}
+            </span>
+          </div>
+          <div class="invoice-services">
+            @for (svc of inv.services; track $index) {
+              <span class="service-item">{{ svc.serviceName }} ({{ svc.doctorName }}) - {{ svc.price | currency:'EGP ':'symbol':'1.0-0' }}</span>
+            }
+          </div>
+          @if (inv.payments && inv.payments.length > 0) {
+            <div class="payments-section">
+              <span class="payments-title">{{ 'DOCTORS.PAYMENT_HISTORY' | translate }}</span>
+              @for (pmt of inv.payments; track $index) {
+                <div class="payment-item">
+                  <span class="payment-date">{{ pmt.date | date: 'yyyy/MM/dd hh:mm a' }}</span>
+                  <span class="payment-amount">{{ pmt.amount | currency:'EGP ':'symbol':'1.0-0' }}</span>
+                </div>
+              }
+            </div>
+          }
+          <div class="invoice-footer">
+            <span>{{ 'DOCTORS.PAID_LABEL' | translate }} {{ inv.paidAmount | currency:'EGP ':'symbol':'1.0-0' }}</span>
+            <span>{{ 'DOCTORS.REMAINING_LABEL' | translate }} <strong class="remaining-value">{{ inv.remainingAmount | currency:'EGP ':'symbol':'1.0-0' }}</strong></span>
+          </div>
+        </div>
+      }
+
+      @if (patientInvoices.length === 0) {
+        <div class="empty-state">
+          <div class="empty-content">
+            <i class="pi pi-file-empty empty-icon"></i>
+            <span>{{ 'DOCTORS.NO_INVOICES' | translate }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="dialog-footer">
+      <p-button [label]="'DOCTORS.CLOSE' | translate" severity="secondary" (onClick)="displayPatientInfo = false"></p-button>
+    </div>
+  }
+</p-dialog>

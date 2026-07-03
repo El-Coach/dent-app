@@ -1,0 +1,599 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.billing-page {
+  @include page-container;
+}
+
+// Page Header
+.page-header {
+  @include page-header;
+  margin-bottom: $space-lg;
+
+  h1 {
+    font-size: $fs-3xl;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+    margin: 0;
+  }
+}
+
+// Safe Overview Cards
+.safe-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.safe-card {
+  @include card-base;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-md;
+  transition: all $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &.opening {
+    border-inline-start: 4px solid $primary-500;
+  }
+
+  &.total {
+    border-inline-start: 4px solid $success;
+  }
+
+  &.reconcile {
+    border-inline-start: 4px solid $warning;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-sm;
+  }
+}
+
+.safe-card-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-50);
+  color: var(--primary-500);
+
+  &.success {
+    background: var(--success-bg);
+    color: var(--success);
+  }
+
+  &.warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+  }
+
+  i {
+    font-size: 20px;
+  }
+}
+
+.safe-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  flex: 1;
+  min-width: 0;
+}
+
+.safe-card-label {
+  font-size: $fs-sm;
+  color: var(--text-muted);
+  font-weight: $fw-medium;
+}
+
+.safe-card-value {
+  font-size: $fs-2xl;
+  font-weight: $fw-bold;
+  font-variant-numeric: tabular-nums;
+
+  &.blue { color: var(--primary-500); }
+  &.green { color: $success; }
+}
+
+// Filter Bar
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  margin-bottom: $space-lg;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.filter-label {
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+// Stats Row
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  @include card-base;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-md;
+  transition: all $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 20px;
+  }
+
+  &.green {
+    background: var(--success-bg);
+    color: var(--success);
+  }
+
+  &.red {
+    background: var(--danger-bg);
+    color: var(--danger);
+  }
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-label {
+  font-size: $fs-sm;
+  color: var(--text-muted);
+  font-weight: $fw-medium;
+}
+
+.stat-value {
+  font-size: $fs-2xl;
+  font-weight: $fw-bold;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+
+  &.green { color: $success; }
+  &.red { color: $danger; }
+}
+
+// Content Card
+.content-card {
+  @include card-base;
+  overflow: hidden;
+}
+
+// Tab Actions
+.tab-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: $space-md;
+}
+
+// Table Wrapper
+.table-wrapper {
+  overflow-x: auto;
+  @include custom-scrollbar;
+}
+
+// Billing Table
+.billing-table {
+  @include table-enhanced;
+
+  :host ::ng-deep .billing-table {
+    background: transparent;
+    border: none;
+  }
+}
+
+// Services List
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.service-detail {
+  font-size: $fs-sm;
+  color: var(--text-secondary);
+}
+
+// Cell Styles
+.cell-id {
+  font-weight: $fw-semibold;
+  color: var(--text-muted);
+  font-size: $fs-sm;
+}
+
+.cell-patient {
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+}
+
+.cell-amount {
+  font-weight: $fw-semibold;
+  font-variant-numeric: tabular-nums;
+
+  &.green { color: $success; }
+  &.red { color: $danger; }
+}
+
+// Empty State
+.empty-message {
+  text-align: center;
+  padding: $space-xl $space-md !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+  color: var(--text-muted);
+
+  i {
+    font-size: 40px;
+    opacity: 0.4;
+  }
+
+  span {
+    font-size: $fs-sm;
+  }
+}
+
+// Dialog
+.billing-dialog {
+  @include dialog-enhanced;
+}
+
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.payment-summary {
+  @include card-base;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-sm;
+
+  &.highlight {
+    padding-top: $space-sm;
+    border-top: 1px solid var(--surface-border);
+    margin-top: $space-xs;
+  }
+}
+
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.summary-label {
+  font-size: $fs-sm;
+  color: var(--text-muted);
+  font-weight: $fw-medium;
+}
+
+.summary-value {
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+
+  &.red { color: $danger; }
+}
+
+.services-detail-list {
+  margin: 0;
+  padding-inline-start: $space-md;
+  font-size: $fs-sm;
+  color: var(--text-secondary);
+
+  li {
+    margin-bottom: $space-xs;
+  }
+}
+
+// Form Fields
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.form-label {
+  font-size: $fs-sm;
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+}
+
+.form-error {
+  color: $danger;
+  font-size: $fs-xs;
+}
+
+.form-help {
+  color: var(--text-muted);
+  font-size: $fs-xs;
+}
+
+// Dialog Footer
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-sm;
+  width: 100%;
+}
+
+// Closure Dialog
+.closure-heading {
+  font-size: $fs-lg;
+  font-weight: $fw-bold;
+  color: var(--text-primary);
+  margin: 0 0 $space-md 0;
+}
+
+.closure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-sm;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.closure-item {
+  @include card-base;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $space-xs;
+
+  &.blue {
+    border-inline-start: 3px solid $primary-500;
+  }
+
+  &.green {
+    border-inline-start: 3px solid $success;
+  }
+
+  &.red {
+    border-inline-start: 3px solid $danger;
+  }
+
+  &.orange {
+    border-inline-start: 3px solid $warning;
+  }
+}
+
+.closure-label {
+  font-size: $fs-sm;
+  color: var(--text-muted);
+  font-weight: $fw-medium;
+}
+
+.closure-value {
+  font-size: $fs-xl;
+  font-weight: $fw-bold;
+  font-variant-numeric: tabular-nums;
+
+  &.blue { color: var(--primary-500); }
+  &.green { color: $success; }
+  &.red { color: $danger; }
+  &.orange { color: $warning; }
+}
+
+.closure-summary-box {
+  @include card-base;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $space-xs;
+  margin-bottom: $space-md;
+  background: rgba(var(--primary-500-rgb), 0.05);
+  border-inline-start: 4px solid $primary-500;
+}
+
+.closure-total {
+  font-size: $fs-3xl;
+  font-weight: $fw-bold;
+  color: $primary-700;
+  font-variant-numeric: tabular-nums;
+}
+
+.closure-formula {
+  font-size: $fs-xs;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+// PrimeNG Overrides
+:host ::ng-deep {
+  .p-tabs {
+    .p-tablist {
+      border-bottom: 2px solid var(--surface-border);
+    }
+
+    .p-tab {
+      font-weight: $fw-semibold;
+      color: var(--text-muted);
+      padding: $space-sm $space-md;
+
+      &.p-tab-active {
+        color: var(--primary-500);
+        border-color: var(--primary-500);
+      }
+    }
+  }
+
+  .p-datatable {
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+    }
+
+    .p-datatable-thead > tr > th {
+      background: var(--surface-50);
+      color: var(--text-secondary);
+      font-weight: $fw-semibold;
+      font-size: $fs-xs;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--surface-border);
+      padding: 12px 16px;
+    }
+
+    .p-datatable-tbody > tr {
+      transition: background $transition-fast;
+
+      &:hover {
+        background: var(--surface-hover);
+      }
+
+      > td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--surface-border);
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .p-dialog {
+    border-radius: $radius-lg !important;
+    overflow: hidden;
+
+    .p-dialog-header {
+      padding: $space-md $space-lg;
+      border-bottom: 1px solid var(--surface-border);
+      background: var(--surface-0);
+      font-weight: $fw-bold;
+      font-size: $fs-lg;
+    }
+
+    .p-dialog-content {
+      padding: $space-lg;
+    }
+
+    .p-dialog-footer {
+      padding: $space $space-lg;
+      border-top: 1px solid var(--surface-border);
+      background: var(--surface-0);
+    }
+  }
+
+  .p-button {
+    border-radius: $radius !important;
+    font-weight: $fw-semibold;
+
+    &.p-button-sm {
+      padding: 0.5rem 1rem;
+      font-size: $fs-sm;
+    }
+  }
+
+  .p-inputtext,
+  .p-dropdown,
+  .p-datepicker {
+    border-radius: $radius !important;
+    border-color: var(--surface-border) !important;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus {
+      border-color: $primary-500 !important;
+      box-shadow: 0 0 0 3px rgba(var(--primary-500-rgb), 0.1) !important;
+    }
+  }
+
+  .p-selectbutton {
+    .p-button {
+      &.p-highlight {
+        background: var(--primary-500);
+        border-color: var(--primary-500);
+        color: white;
+      }
+    }
+  }
+
+  .p-tag {
+    border-radius: $radius-full;
+    font-size: $fs-xs;
+    font-weight: $fw-semibold;
+  }
+}

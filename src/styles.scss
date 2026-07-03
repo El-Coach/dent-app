@@ -1,0 +1,360 @@
+@use '@angular/material' as mat;
+@use 'app/shared/styles/variables' as *;
+@use 'app/shared/styles/mixins' as *;
+@use 'app/shared/styles/dark-theme';
+@use 'primeicons/primeicons.css';
+@use 'normalize.css';
+
+// Angular Material Theme
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+// Base Styles
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: $font-sans;
+  font-size: $fs-base;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  transition: background-color $transition-slow, color $transition-slow;
+}
+
+// Angular Material Icon
+.mat-icon {
+  font-family: 'Material Symbols Outlined' !important;
+  vertical-align: middle;
+}
+
+// Global Typography
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+h1 { font-size: $fs-4xl; font-weight: $fw-bold; letter-spacing: -0.02em; }
+h2 { font-size: $fs-3xl; font-weight: $fw-bold; letter-spacing: -0.01em; }
+h3 { font-size: $fs-2xl; font-weight: $fw-semibold; }
+h4 { font-size: $fs-xl; font-weight: $fw-semibold; }
+h5 { font-size: $fs-lg; font-weight: $fw-medium; }
+h6 { font-size: $fs-md; font-weight: $fw-medium; }
+
+p {
+  margin: 0 0 $space-sm;
+}
+
+a {
+  color: var(--primary-500);
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: var(--primary-600);
+  }
+}
+
+// Global Card Style
+.card {
+  @include card-base;
+  padding: $space-md;
+}
+
+// PrimeNG Overrides
+.p-component {
+  font-family: $font-sans !important;
+}
+
+// Dialog Enhancements
+.p-dialog {
+  border-radius: $radius-lg !important;
+
+  .p-dialog-header {
+    padding: $space-md $space-lg;
+    border-bottom: 1px solid var(--surface-border);
+    background: var(--surface-0);
+    color: var(--text-primary);
+  }
+
+  .p-dialog-content {
+    padding: $space-lg;
+    background: var(--surface-0);
+    color: var(--text-primary);
+  }
+
+  .p-dialog-footer {
+    padding: $space $space-lg;
+    border-top: 1px solid var(--surface-border);
+    background: var(--surface-0);
+  }
+}
+
+// Table Enhancements
+.p-datatable {
+  background: transparent;
+  border: none;
+
+  .p-datatable-thead > tr > th {
+    background: var(--surface-50);
+    color: var(--text-secondary);
+    font-weight: $fw-semibold;
+    font-size: $fs-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--surface-border);
+    padding: 12px 16px;
+  }
+
+  .p-datatable-tbody > tr {
+    transition: background $transition-fast;
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+
+    > td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--surface-border);
+      color: var(--text-primary);
+    }
+  }
+}
+
+// Button Enhancements
+.p-button {
+  border-radius: $radius !important;
+  font-weight: $fw-semibold;
+  transition: all $transition-fast;
+
+  &.p-button-sm {
+    padding: 0.5rem 1rem;
+    font-size: $fs-sm;
+  }
+}
+
+// Input Enhancements
+.p-inputtext,
+.p-dropdown,
+.p-datepicker,
+.p-inputnumber {
+  border-radius: $radius !important;
+  border-color: var(--surface-border) !important;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:focus {
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
+}
+
+// Tag Enhancements
+.p-tag {
+  border-radius: $radius-full !important;
+  font-weight: $fw-semibold;
+  font-size: $fs-xs;
+  padding: 4px 12px;
+}
+
+// Tab Enhancements
+.p-tabview {
+  .p-tabview-nav {
+    border-color: var(--surface-border);
+    background: transparent;
+  }
+
+  .p-tabview-panels {
+    background: transparent;
+    padding: $space-md 0;
+  }
+}
+
+// Card Enhancements
+.p-card {
+  background: var(--surface-0);
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+
+  .p-card-body {
+    padding: $space-md;
+  }
+}
+
+// Toolbar Enhancements
+.p-toolbar {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-border);
+  border-radius: $radius-md;
+  padding: $space-sm $space-md;
+}
+
+// Drawer Enhancements
+.p-drawer {
+  background: var(--surface-0);
+
+  .p-drawer-header {
+    padding: $space-md;
+    border-bottom: 1px solid var(--surface-border);
+  }
+
+  .p-drawer-content {
+    padding: $space-md;
+  }
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-300);
+  border-radius: $radius-full;
+
+  &:hover {
+    background: var(--surface-400);
+  }
+}
+
+// Text Capitalize (for Arabic)
+[dir="rtl"] {
+  text-transform: capitalize;
+}
+
+// Utility Classes
+.text-center { text-align: center; }
+.text-right { text-align: end; }
+.text-left { text-align: start; }
+.text-primary { color: var(--primary-500); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+.text-muted { color: var(--text-muted); }
+.text-secondary { color: var(--text-secondary); }
+
+.font-bold { font-weight: $fw-bold; }
+.font-semibold { font-weight: $fw-semibold; }
+.font-medium { font-weight: $fw-medium; }
+
+.bg-primary { background-color: var(--primary-500); }
+.bg-success { background-color: var(--success); }
+.bg-warning { background-color: var(--warning); }
+.bg-danger { background-color: var(--danger); }
+
+.rounded { border-radius: $radius; }
+.rounded-md { border-radius: $radius-md; }
+.rounded-lg { border-radius: $radius-lg; }
+.rounded-full { border-radius: $radius-full; }
+
+.shadow { box-shadow: $shadow; }
+.shadow-md { box-shadow: $shadow-md; }
+.shadow-lg { box-shadow: $shadow-lg; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+.justify-start { justify-content: flex-start; }
+.flex-1 { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+
+.gap-xs { gap: $space-xs; }
+.gap-sm { gap: $space-sm; }
+.gap { gap: $space; }
+.gap-md { gap: $space-md; }
+.gap-lg { gap: $space-lg; }
+
+.m-0 { margin: 0; }
+.mt-xs { margin-top: $space-xs; }
+.mt-sm { margin-top: $space-sm; }
+.mt { margin-top: $space; }
+.mt-md { margin-top: $space-md; }
+.mt-lg { margin-top: $space-lg; }
+.mb-xs { margin-bottom: $space-xs; }
+.mb-sm { margin-bottom: $space-sm; }
+.mb { margin-bottom: $space; }
+.mb-md { margin-bottom: $space-md; }
+.mb-lg { margin-bottom: $space-lg; }
+
+.p-0 { padding: 0; }
+.p-xs { padding: $space-xs; }
+.p-sm { padding: $space-sm; }
+.p { padding: $space; }
+.p-md { padding: $space-md; }
+.p-lg { padding: $space-lg; }
+.px-sm { padding-inline: $space-sm; }
+.px { padding-inline: $space; }
+.px-md { padding-inline: $space-md; }
+.py-sm { padding-block: $space-sm; }
+.py { padding-block: $space; }
+.py-md { padding-block: $space-md; }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cursor-pointer { cursor: pointer; }
+.select-none { user-select: none; }
+.pointer-events-none { pointer-events: none; }
+.opacity-0 { opacity: 0; }
+.opacity-50 { opacity: 0.5; }
+.opacity-100 { opacity: 1; }
+
+.hidden { display: none; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+.inline { display: inline; }
+
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+.border { border: 1px solid var(--surface-border); }
+.border-top { border-top: 1px solid var(--surface-border); }
+.border-bottom { border-bottom: 1px solid var(--surface-border); }

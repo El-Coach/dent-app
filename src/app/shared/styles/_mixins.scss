@@ -1,0 +1,420 @@
+@use 'variables' as *;
+
+// Card Styles
+@mixin card-base {
+  background: var(--surface-0);
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+  border: 1px solid var(--surface-border);
+  transition: box-shadow $transition, transform $transition;
+}
+
+@mixin card-hover {
+  @include card-base;
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+@mixin card-interactive {
+  @include card-hover;
+  cursor: pointer;
+}
+
+// Status Badges
+@mixin status-badge($color) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: $radius-full;
+  font-size: $fs-xs;
+  font-weight: $fw-semibold;
+  background: #{$color}15;
+  color: $color;
+  white-space: nowrap;
+}
+
+@mixin status-waiting {
+  @include status-badge($warning);
+}
+
+@mixin status-in-doctor {
+  @include status-badge($info);
+}
+
+@mixin status-completed {
+  @include status-badge($success);
+}
+
+@mixin status-cancelled {
+  @include status-badge($danger);
+}
+
+// Page Layout
+@mixin page-container {
+  padding: $space-sm;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  @media (min-width: 640px) {
+    padding: $space-md;
+  }
+}
+
+@mixin page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-sm;
+  flex-wrap: wrap;
+  gap: $space-sm;
+
+  @media (min-width: 640px) {
+    margin-bottom: $space-md;
+  }
+
+  h1, h2 {
+    font-size: $fs-2xl;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+    margin: 0;
+  }
+}
+
+// Table Enhancements
+@mixin table-enhanced {
+  .p-datatable {
+    background: transparent;
+    border: none;
+
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .p-datatable-thead > tr > th {
+      background: var(--surface-50);
+      color: var(--text-secondary);
+      font-weight: $fw-semibold;
+      font-size: $fs-xs;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--surface-border);
+      padding: 10px 12px;
+
+      @media (min-width: 640px) {
+        padding: 12px 16px;
+      }
+    }
+
+    .p-datatable-tbody > tr {
+      transition: background $transition-fast;
+
+      &:hover {
+        background: var(--surface-hover);
+      }
+
+      > td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--surface-border);
+        color: var(--text-primary);
+        font-size: $fs-sm;
+
+        @media (min-width: 640px) {
+          padding: 14px 16px;
+          font-size: $fs-base;
+        }
+      }
+    }
+
+    .p-datatable-tbody > tr.p-datatable-row-selected {
+      background: var(--primary-50);
+    }
+  }
+}
+
+// Input Enhancements
+@mixin input-enhanced {
+  .p-inputtext,
+  .p-dropdown,
+  .p-datepicker,
+  .p-number {
+    border-radius: $radius !important;
+    border-color: var(--surface-border) !important;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus {
+      border-color: var(--primary-500) !important;
+      box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+    }
+  }
+}
+
+// Button Enhancements
+@mixin button-enhanced {
+  .p-button {
+    border-radius: $radius !important;
+    font-weight: $fw-semibold;
+    transition: all $transition-fast;
+
+    &.p-button-sm {
+      padding: 0.5rem 1rem;
+      font-size: $fs-sm;
+    }
+  }
+}
+
+// Dialog Enhancements
+@mixin dialog-enhanced {
+  .p-dialog {
+    border-radius: $radius-lg !important;
+    overflow: hidden;
+    margin: $space-sm !important;
+    max-width: calc(100vw - 16px) !important;
+
+    @media (min-width: 640px) {
+      margin: 0 !important;
+    }
+
+    .p-dialog-header {
+      padding: $space-sm $space-md;
+      border-bottom: 1px solid var(--surface-border);
+      background: var(--surface-0);
+
+      @media (min-width: 640px) {
+        padding: $space-md $space-lg;
+      }
+    }
+
+    .p-dialog-content {
+      padding: $space-md;
+
+      @media (min-width: 640px) {
+        padding: $space-lg;
+      }
+    }
+
+    .p-dialog-footer {
+      padding: $space-sm $space-md;
+      border-top: 1px solid var(--surface-border);
+      background: var(--surface-0);
+
+      @media (min-width: 640px) {
+        padding: $space $space-lg;
+      }
+    }
+  }
+}
+
+// Stat Card
+@mixin stat-card($accent-color) {
+  @include card-base;
+  padding: $space-sm;
+  position: relative;
+  overflow: hidden;
+
+  @media (min-width: 640px) {
+    padding: $space-md;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: $accent-color;
+    border-radius: 0 $radius-md $radius-md 0;
+  }
+
+  [dir="ltr"] &::before {
+    right: auto;
+    left: 0;
+    border-radius: $radius-md 0 0 $radius-md;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #{$accent-color}15;
+    color: $accent-color;
+    margin-bottom: $space-xs;
+
+    @media (min-width: 640px) {
+      width: 48px;
+      height: 48px;
+      margin-bottom: $space-sm;
+    }
+  }
+
+  .stat-label {
+    font-size: $fs-xs;
+    color: var(--text-secondary);
+    margin-bottom: $space-xs;
+
+    @media (min-width: 640px) {
+      font-size: $fs-sm;
+    }
+  }
+
+  .stat-value {
+    font-size: $fs-xl;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+
+    @media (min-width: 640px) {
+      font-size: $fs-2xl;
+    }
+  }
+}
+
+// Section Heading
+@mixin section-heading {
+  font-size: $fs-lg;
+  font-weight: $fw-semibold;
+  color: var(--text-primary);
+  margin: 0 0 $space-md 0;
+}
+
+// Flex Utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+// Gap Utilities
+@mixin gap-xs { gap: $space-xs; }
+@mixin gap-sm { gap: $space-sm; }
+@mixin gap { gap: $space; }
+@mixin gap-md { gap: $space-md; }
+
+// Text Utilities
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// RTL Support
+@mixin rtl($property, $ltr-value, $rtl-value) {
+  [dir="ltr"] & {
+    #{$property}: $ltr-value;
+  }
+  [dir="rtl"] & {
+    #{$property}: $rtl-value;
+  }
+}
+
+@mixin margin-inline-start($value) {
+  margin-inline-start: $value;
+}
+
+@mixin margin-inline-end($value) {
+  margin-inline-end: $value;
+}
+
+@mixin padding-inline-start($value) {
+  padding-inline-start: $value;
+}
+
+@mixin padding-inline-end($value) {
+  padding-inline-end: $value;
+}
+
+// Dark Mode Support
+// Use this mixin INSIDE a selector, not at the top level
+@mixin dark-mode {
+  .dark & {
+    @content;
+  }
+}
+
+@mixin light-mode {
+  .light & {
+    @content;
+  }
+}
+
+// Top-level dark mode - use this at root level of component SCSS
+@mixin dark-mode-root {
+  :host.dark, .dark :host, &.dark {
+    @content;
+  }
+}
+
+// Animation
+@mixin fade-in {
+  animation: fadeIn $transition-slow ease-in-out;
+}
+
+@mixin slide-in-right {
+  animation: slideInRight $transition-slow ease-out;
+}
+
+@mixin slide-in-left {
+  animation: slideInLeft $transition-slow ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+// Scrollbar
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--surface-300);
+    border-radius: $radius-full;
+
+    &:hover {
+      background: var(--surface-400);
+    }
+  }
+}

@@ -1,0 +1,294 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.labs-ledger-page {
+  @include page-container;
+  @include fade-in;
+
+  .page-header {
+    @include page-header;
+    margin-bottom: $space-md;
+
+    h1 {
+      @include rtl(margin-inline-end, 0, 16px);
+    }
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: $space;
+    margin-bottom: $space-md;
+  }
+
+  .summary-card {
+    @include card-base;
+    padding: $space-md;
+    display: flex;
+    align-items: center;
+    gap: $space;
+
+    &.debt::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 4px;
+      background: $danger;
+      border-radius: 0 $radius-md $radius-md 0;
+    }
+
+    &.reserved::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 4px;
+      background: $warning;
+      border-radius: 0 $radius-md $radius-md 0;
+    }
+
+    position: relative;
+    overflow: hidden;
+
+    .summary-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: $space-xs;
+    }
+
+    .summary-label {
+      font-size: $fs-sm;
+      color: var(--text-secondary);
+    }
+
+    .summary-value {
+      font-size: $fs-2xl;
+      font-weight: $fw-bold;
+
+      &.danger { color: $danger; }
+      &.warning { color: $warning; }
+    }
+  }
+
+  .filter-bar {
+    @include flex-start;
+    gap: $space;
+    margin-bottom: $space-md;
+    padding: $space-md;
+    @include card-base;
+
+    .filter-label {
+      font-weight: $fw-semibold;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .lab-select {
+      min-width: 200px;
+    }
+  }
+
+  .ledger-card {
+    @include card-base;
+    padding: $space;
+    overflow: hidden;
+
+    @include table-enhanced;
+    @include button-enhanced;
+
+    .settle-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: $space-md;
+    }
+  }
+}
+
+// Dialog Styles
+:host ::ng-deep {
+  @include dialog-enhanced;
+  @include input-enhanced;
+
+  .labs-dialog {
+    .p-dialog-header {
+      background: var(--surface-0);
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .p-dialog-content {
+      padding: $space-lg;
+    }
+  }
+
+  .settle-dialog {
+    .p-dialog-content {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+  }
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+
+    label {
+      font-weight: $fw-semibold;
+      color: var(--text-primary);
+      font-size: $fs-sm;
+    }
+  }
+
+  .cost-summary {
+    @include card-base;
+    padding: $space-md;
+    background: var(--surface-50);
+
+    .cost-row {
+      @include flex-between;
+      padding: $space-xs 0;
+
+      &.total {
+        border-top: 1px solid var(--surface-border);
+        margin-top: $space-xs;
+        padding-top: $space-sm;
+
+        .cost-label {
+          font-weight: $fw-bold;
+        }
+
+        .cost-value {
+          font-size: $fs-xl;
+          font-weight: $fw-bold;
+
+          &.danger { color: $danger; }
+        }
+      }
+
+      .cost-label {
+        color: var(--text-secondary);
+        font-size: $fs-sm;
+      }
+
+      .cost-value {
+        font-weight: $fw-semibold;
+        color: var(--text-primary);
+      }
+    }
+  }
+}
+
+.dialog-footer {
+  @include flex-between;
+  width: 100%;
+}
+
+// Settle Dialog Specific
+.settle-header {
+  margin-bottom: $space-md;
+  text-align: center;
+
+  .settle-lab-name {
+    font-size: $fs-xl;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+    margin: 0 0 $space-xs 0;
+  }
+
+  .settle-subtitle {
+    font-size: $fs-sm;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: $space-lg;
+}
+
+.settle-summary {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  margin-top: $space-md;
+
+  .settle-stat {
+    @include card-base;
+    padding: $space-md;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    &.danger::before { background: $danger; }
+    &.warning::before { background: $warning; }
+    &.info::before { background: $info; }
+
+    .settle-stat-label {
+      display: block;
+      font-size: $fs-sm;
+      color: var(--text-secondary);
+      margin-bottom: $space-xs;
+    }
+
+    .settle-stat-value {
+      display: block;
+      font-size: $fs-xl;
+      font-weight: $fw-bold;
+      color: var(--text-primary);
+    }
+
+    &.danger .settle-stat-value { color: $danger; }
+    &.warning .settle-stat-value { color: $warning; }
+    &.info .settle-stat-value { color: $info; }
+  }
+}
+
+.settle-info {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  margin-top: $space-md;
+  padding: $space-md;
+  background: var(--surface-50);
+  border-radius: $radius;
+  border: 1px solid var(--surface-border);
+
+  i {
+    color: $info;
+    font-size: $fs-xl;
+    margin-top: 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: $fs-sm;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+}
+

@@ -1,0 +1,420 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.appointments {
+  @include page-container;
+}
+
+// Page Header
+.page-header {
+  @include page-header;
+  margin-bottom: $space-lg;
+
+  h1 {
+    font-size: $fs-3xl;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .p-button {
+    border-radius: $radius;
+    font-weight: $fw-semibold;
+    padding: 0.6rem 1.2rem;
+    background: var(--primary-500);
+    border-color: var(--primary-500);
+
+    &:hover {
+      background: var(--primary-600);
+      border-color: var(--primary-600);
+    }
+  }
+}
+
+// Stats Row
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  @include card-base;
+  padding: $space-md;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 0 $radius-md $radius-md 0;
+  }
+
+  [dir="ltr"] &::before {
+    right: auto;
+    left: 0;
+    border-radius: $radius-md 0 0 $radius-md;
+  }
+
+  &.stat-waiting {
+    &::before {
+      background: $warning;
+    }
+    .stat-icon {
+      background: var(--warning-bg);
+      color: $warning;
+    }
+  }
+
+  &.stat-in-clinic {
+    &::before {
+      background: $info;
+    }
+    .stat-icon {
+      background: var(--info-bg);
+      color: $info;
+    }
+  }
+
+  &.stat-total {
+    &::before {
+      background: $success;
+    }
+    .stat-icon {
+      background: var(--success-bg);
+      color: $success;
+    }
+  }
+
+  &.stat-date {
+    &::before {
+      background: var(--primary-500);
+    }
+    .stat-icon {
+      background: rgba(var(--primary-rgb), 0.1);
+      color: var(--primary-500);
+    }
+  }
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 20px;
+  }
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  min-width: 0;
+  flex: 1;
+
+  .w-full {
+    min-width: 140px;
+  }
+}
+
+.stat-label {
+  font-size: $fs-sm;
+  color: var(--text-secondary);
+  font-weight: $fw-medium;
+}
+
+.stat-value {
+  font-size: $fs-2xl;
+  font-weight: $fw-bold;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+// Filter Bar
+.filter-bar {
+  margin-bottom: $space-md;
+  max-width: 400px;
+}
+
+// Table Card
+.table-card {
+  @include card-base;
+  overflow: hidden;
+
+  @include table-enhanced;
+
+  .p-datatable {
+    margin: 0;
+  }
+}
+
+// Table Cell Styling
+.ticket-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-full;
+  background: var(--primary-50);
+  color: var(--primary-600);
+  font-weight: $fw-bold;
+  font-size: $fs-sm;
+}
+
+.patient-name {
+  font-weight: $fw-medium;
+  color: var(--text-primary);
+}
+
+.time-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: $radius-sm;
+  background: var(--surface-100);
+  color: var(--text-secondary);
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+}
+
+// Services List in Table
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-sm;
+  padding: $space-sm $space;
+  border: 1px solid var(--surface-border);
+  border-radius: $radius;
+  background: var(--surface-50);
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.service-main {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.service-actions {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  flex-wrap: wrap;
+
+  .p-button {
+    border-radius: $radius-sm;
+    font-weight: $fw-semibold;
+    font-size: $fs-xs;
+    padding: 0.35rem 0.75rem;
+  }
+}
+
+.completed-label {
+  @include status-completed;
+  font-size: $fs-xs;
+  white-space: nowrap;
+}
+
+.doctor-inline-select {
+  max-width: 150px;
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--text-muted);
+  padding: $space-xl !important;
+  font-style: italic;
+}
+
+// Dialog Styling
+:host ::ng-deep {
+  @include dialog-enhanced;
+
+  .p-dialog {
+    border-radius: $radius-lg !important;
+
+    .p-dialog-header {
+      padding: $space-md $space-lg;
+      border-bottom: 1px solid var(--surface-border);
+      background: var(--surface-0);
+
+      .p-dialog-title {
+        font-weight: $fw-bold;
+        font-size: $fs-lg;
+        color: var(--text-primary);
+      }
+    }
+
+    .p-dialog-content {
+      padding: $space-lg;
+    }
+
+    .p-dialog-footer {
+      padding: $space $space-lg;
+      border-top: 1px solid var(--surface-border);
+      background: var(--surface-0);
+    }
+  }
+
+  // Input Enhancements
+  @include input-enhanced;
+
+  .p-inputtext,
+  .p-dropdown,
+  .p-datepicker {
+    border-radius: $radius !important;
+    border-color: var(--surface-border) !important;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus {
+      border-color: var(--primary-500) !important;
+      box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+    }
+  }
+
+  // Button Enhancements
+  @include button-enhanced;
+
+  .p-button {
+    border-radius: $radius !important;
+    font-weight: $fw-semibold;
+    transition: all $transition-fast;
+
+    &.p-button-sm {
+      padding: 0.5rem 1rem;
+      font-size: $fs-sm;
+    }
+  }
+
+  // Tag Enhancements
+  .p-tag {
+    border-radius: $radius-sm;
+    font-weight: $fw-semibold;
+    font-size: $fs-xs;
+    padding: 0.25rem 0.625rem;
+  }
+
+  // Date Filter in stat card
+  .date-filter {
+    .p-datepicker {
+      width: 100%;
+    }
+  }
+}
+
+// Form Fields
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  label {
+    font-weight: $fw-semibold;
+    font-size: $fs-sm;
+    color: var(--text-secondary);
+  }
+}
+
+.field-error {
+  color: $danger;
+  font-size: $fs-xs;
+  margin-top: 2px;
+}
+
+// Service Row in Dialog
+.service-row {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  margin-bottom: $space-sm;
+  flex-wrap: wrap;
+
+  .flex-1 {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .service-price {
+    font-weight: $fw-bold;
+    white-space: nowrap;
+    color: var(--text-primary);
+    font-size: $fs-sm;
+  }
+}
+
+// Emergency Toggle
+.emergency-toggle {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+
+  label {
+    font-weight: $fw-medium;
+    font-size: $fs-sm;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+}
+
+// Dialog Footer
+.dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $space-md;
+  border-top: 1px solid var(--surface-border);
+  margin-top: $space-md;
+}
+
+.total-display {
+  font-weight: $fw-bold;
+  font-size: $fs-lg;
+  color: var(--text-primary);
+}
+
+.footer-actions {
+  display: flex;
+  gap: $space-sm;
+}

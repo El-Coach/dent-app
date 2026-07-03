@@ -1,0 +1,429 @@
+<div class="settings-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>{{ 'NAV.SETTINGS' | translate }}</h1>
+  </div>
+
+  <p-tabs [value]="'services'">
+    <p-tablist>
+      <p-tab value="services">{{ 'SETTINGS.SERVICES_TAB' | translate }}</p-tab>
+      <p-tab value="doctors">{{ 'SETTINGS.DOCTORS_TAB' | translate }}</p-tab>
+      <p-tab value="labs">{{ 'SETTINGS.LABS_TAB' | translate }}</p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+      <!-- Services Tab -->
+      <p-tabpanel value="services">
+        <div class="tab-header">
+          <p-button
+            [label]="'SETTINGS.ADD_SERVICE' | translate"
+            icon="pi pi-plus"
+            (onClick)="openAddServiceDialog()"
+          ></p-button>
+        </div>
+
+        <div class="data-card">
+          <p-table [value]="services" stripedRows>
+            <ng-template #header>
+              <tr>
+                <th class="col-num">{{ 'SETTINGS.NUMBER' | translate }}</th>
+                <th>{{ 'SETTINGS.SERVICE_NAME' | translate }}</th>
+                <th>{{ 'SETTINGS.PRICE' | translate }}</th>
+                <th class="col-actions">{{ 'SETTINGS.ACTIONS' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-svc let-i="rowIndex">
+              <tr>
+                <td class="col-num">{{ i + 1 }}</td>
+                <td>{{ svc.name }}</td>
+                <td>{{ svc.price | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                <td class="col-actions">
+                  <div class="action-buttons">
+                    <p-button
+                      [label]="'SETTINGS.EDIT' | translate"
+                      severity="warn"
+                      size="small"
+                      (onClick)="openEditServiceDialog(i)"
+                    ></p-button>
+                    <p-button
+                      [label]="'SETTINGS.DELETE' | translate"
+                      severity="danger"
+                      size="small"
+                      (onClick)="confirmDeleteService(i)"
+                    ></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="4" class="empty-state">{{ 'SETTINGS.NO_SERVICES' | translate }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Doctors Tab -->
+      <p-tabpanel value="doctors">
+        <div class="tab-header">
+          <p-button
+            [label]="'SETTINGS.ADD_DOCTOR' | translate"
+            icon="pi pi-plus"
+            (onClick)="openAddDoctorDialog()"
+          ></p-button>
+        </div>
+
+        <div class="data-card">
+          <p-table [value]="doctors" stripedRows>
+            <ng-template #header>
+              <tr>
+                <th class="col-num">{{ 'SETTINGS.NUMBER' | translate }}</th>
+                <th>{{ 'SETTINGS.DOCTOR_NAME' | translate }}</th>
+                <th>{{ 'SETTINGS.SPECIALTY' | translate }}</th>
+                <th>{{ 'SETTINGS.SHARE_PCT' | translate }}</th>
+                <th class="col-actions">{{ 'SETTINGS.ACTIONS' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-doctor let-i="rowIndex">
+              <tr>
+                <td class="col-num">{{ doctor.id }}</td>
+                <td>{{ doctor.name }}</td>
+                <td>{{ doctor.specialty }}</td>
+                <td>
+                  <div class="percentage-input">
+                    <input
+                      type="number"
+                      [value]="doctor.doctorSharePercentage"
+                      (input)="updateDoctorPercentage(doctor, +$any($event.target).value)"
+                      min="0"
+                      max="100"
+                      pInputText
+                    />
+                    <span class="percentage-symbol">%</span>
+                  </div>
+                </td>
+                <td class="col-actions">
+                  <div class="action-buttons">
+                    <p-button
+                      [label]="'SETTINGS.EDIT' | translate"
+                      severity="warn"
+                      size="small"
+                      (onClick)="openEditDoctorDialog(doctor)"
+                    ></p-button>
+                    <p-button
+                      [label]="'SETTINGS.DELETE' | translate"
+                      severity="danger"
+                      size="small"
+                      (onClick)="confirmDeleteDoctor(doctor.id)"
+                    ></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="5" class="empty-state">{{ 'SETTINGS.NO_DOCTORS' | translate }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Labs Tab -->
+      <p-tabpanel value="labs">
+        <div class="tab-header">
+          <p-button
+            [label]="'SETTINGS.ADD_LAB' | translate"
+            icon="pi pi-plus"
+            (onClick)="openAddLabDialog()"
+          ></p-button>
+          <p-button
+            [label]="'SETTINGS.ADD_LAB_SERVICE' | translate"
+            icon="pi pi-plus"
+            severity="info"
+            (onClick)="openAddLabServiceOptionDialog()"
+          ></p-button>
+        </div>
+
+        <!-- Labs Section -->
+        <h3 class="section-heading">{{ 'SETTINGS.LABS_TAB' | translate }}</h3>
+        <div class="data-card mb-4">
+          <p-table [value]="labs" stripedRows>
+            <ng-template #header>
+              <tr>
+                <th class="col-num">{{ 'SETTINGS.NUMBER' | translate }}</th>
+                <th>{{ 'SETTINGS.LAB_NAME' | translate }}</th>
+                <th>{{ 'SETTINGS.PHONE' | translate }}</th>
+                <th>{{ 'SETTINGS.BALANCE' | translate }}</th>
+                <th>{{ 'SETTINGS.RESERVED' | translate }}</th>
+                <th class="col-actions">{{ 'SETTINGS.ACTIONS' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-lab>
+              <tr>
+                <td class="col-num">{{ lab.id }}</td>
+                <td>{{ lab.name }}</td>
+                <td>{{ lab.phone }}</td>
+                <td>
+                  <span class="balance-badge" [class.balance-zero]="lab.balance === 0" [class.balance-positive]="lab.balance > 0">
+                    {{ lab.balance | currency:'EGP ':'symbol':'1.0-0' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="balance-badge" [class.balance-zero]="lab.reservedBox === 0" [class.balance-warning]="lab.reservedBox > 0">
+                    {{ lab.reservedBox | currency:'EGP ':'symbol':'1.0-0' }}
+                  </span>
+                </td>
+                <td class="col-actions">
+                  <div class="action-buttons">
+                    <p-button
+                      [label]="'SETTINGS.EDIT' | translate"
+                      severity="warn"
+                      size="small"
+                      (onClick)="openEditLabDialog(lab)"
+                    ></p-button>
+                    <p-button
+                      [label]="'SETTINGS.DELETE' | translate"
+                      severity="danger"
+                      size="small"
+                      (onClick)="confirmDeleteLab(lab.id)"
+                    ></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="6" class="empty-state">{{ 'SETTINGS.NO_LABS' | translate }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <!-- Lab Services Section -->
+        <h3 class="section-heading">{{ 'SETTINGS.LAB_SERVICES_HEADING' | translate }}</h3>
+        <div class="data-card">
+          <p-table [value]="labServiceOptions" stripedRows>
+            <ng-template #header>
+              <tr>
+                <th class="col-num">{{ 'SETTINGS.NUMBER' | translate }}</th>
+                <th>{{ 'SETTINGS.LAB_SERVICE_NAME' | translate }}</th>
+                <th>{{ 'SETTINGS.COST_PRICE' | translate }}</th>
+                <th class="col-actions">{{ 'SETTINGS.ACTIONS' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-opt let-i="rowIndex">
+              <tr>
+                <td class="col-num">{{ opt.id }}</td>
+                <td>{{ opt.serviceName }}</td>
+                <td>{{ opt.costPrice | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                <td class="col-actions">
+                  <div class="action-buttons">
+                    <p-button
+                      [label]="'SETTINGS.EDIT' | translate"
+                      severity="warn"
+                      size="small"
+                      (onClick)="openEditLabServiceOptionDialog(i)"
+                    ></p-button>
+                    <p-button
+                      [label]="'SETTINGS.DELETE' | translate"
+                      severity="danger"
+                      size="small"
+                      (onClick)="confirmDeleteLabServiceOption(i)"
+                    ></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="4" class="empty-state">{{ 'SETTINGS.NO_LAB_SERVICES' | translate }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+<!-- Service Dialog -->
+<p-dialog
+  [header]="serviceDialogTitle | translate"
+  [(visible)]="displayServiceDialog"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  styleClass="settings-dialog"
+>
+  <form [formGroup]="serviceForm" (ngSubmit)="saveService()">
+    <div class="dialog-field">
+      <label for="serviceName">{{ 'SETTINGS.SERVICE_NAME' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input id="serviceName" type="text" pInputText formControlName="name" class="w-full" />
+    </div>
+    <div class="dialog-field">
+      <label for="servicePrice">{{ 'SETTINGS.PRICE' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input id="servicePrice" type="number" pInputText formControlName="price" class="w-full" min="1" />
+    </div>
+    <div class="dialog-actions">
+      <p-button [label]="'COMMON.CANCEL' | translate" severity="secondary" (onClick)="displayServiceDialog = false"></p-button>
+      <p-button [label]="'COMMON.SAVE' | translate" type="submit" [disabled]="serviceForm.invalid"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Doctor Dialog -->
+<p-dialog
+  [header]="doctorDialogTitle | translate"
+  [(visible)]="displayDoctorDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  styleClass="settings-dialog"
+>
+  <form [formGroup]="doctorForm" (ngSubmit)="saveDoctor()">
+    <div class="dialog-field">
+      <label for="doctorName">{{ 'SETTINGS.DOCTOR_NAME' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input id="doctorName" type="text" pInputText formControlName="name" class="w-full" />
+    </div>
+    <div class="dialog-field">
+      <label for="doctorSpecialty">{{ 'SETTINGS.SPECIALTY' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input id="doctorSpecialty" type="text" pInputText formControlName="specialty" class="w-full" />
+    </div>
+    <div class="dialog-field">
+      <label for="doctorPhone">{{ 'SETTINGS.PHONE' | translate }}</label>
+      <input id="doctorPhone" type="text" pInputText formControlName="phone" class="w-full" />
+    </div>
+    <div class="dialog-field">
+      <label for="doctorSharePercentage">{{ 'SETTINGS.SHARE_PCT' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input
+        id="doctorSharePercentage"
+        type="number"
+        pInputText
+        formControlName="doctorSharePercentage"
+        class="w-full"
+        min="0"
+        max="100"
+      />
+    </div>
+    <div class="dialog-actions">
+      <p-button [label]="'COMMON.CANCEL' | translate" severity="secondary" (onClick)="displayDoctorDialog = false"></p-button>
+      <p-button [label]="'COMMON.SAVE' | translate" type="submit" [disabled]="doctorForm.invalid"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Lab Dialog -->
+<p-dialog
+  [header]="labDialogTitle | translate"
+  [(visible)]="displayLabDialog"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  styleClass="settings-dialog"
+>
+  <form [formGroup]="labForm" (ngSubmit)="saveLab()">
+    <div class="dialog-field">
+      <label for="labName">{{ 'SETTINGS.LAB_NAME' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input id="labName" type="text" pInputText formControlName="name" class="w-full" />
+    </div>
+    <div class="dialog-field">
+      <label for="labPhone">{{ 'SETTINGS.PHONE' | translate }}</label>
+      <input id="labPhone" type="text" pInputText formControlName="phone" class="w-full" />
+    </div>
+    <div class="dialog-actions">
+      <p-button [label]="'COMMON.CANCEL' | translate" severity="secondary" (onClick)="displayLabDialog = false"></p-button>
+      <p-button [label]="'COMMON.SAVE' | translate" type="submit" [disabled]="labForm.invalid"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Lab Service Option Dialog -->
+<p-dialog
+  [header]="labServiceOptionDialogTitle | translate"
+  [(visible)]="displayLabServiceOptionDialog"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  styleClass="settings-dialog"
+>
+  <form [formGroup]="labServiceOptionForm" (ngSubmit)="saveLabServiceOption()">
+    <div class="dialog-field">
+      <label for="labSvcName">{{ 'SETTINGS.LAB_SERVICE_NAME' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input id="labSvcName" type="text" pInputText formControlName="serviceName" class="w-full" />
+    </div>
+    <div class="dialog-field">
+      <label for="labSvcCost">{{ 'SETTINGS.COST_PRICE' | translate }} {{ 'SETTINGS.REQUIRED' | translate }}</label>
+      <input id="labSvcCost" type="number" pInputText formControlName="costPrice" class="w-full" min="1" />
+    </div>
+    <div class="dialog-actions">
+      <p-button [label]="'COMMON.CANCEL' | translate" severity="secondary" (onClick)="displayLabServiceOptionDialog = false"></p-button>
+      <p-button [label]="'COMMON.SAVE' | translate" type="submit" [disabled]="labServiceOptionForm.invalid"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Delete Confirm Dialog -->
+<p-dialog
+  [header]="'SETTINGS.DELETE_CONFIRM' | translate"
+  [(visible)]="displayDeleteConfirmDialog"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  styleClass="settings-dialog delete-dialog"
+>
+  @if (deleteTarget && deleteBlocked) {
+    <div class="delete-confirm-content">
+      <div class="delete-icon-blocked">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      @if (deleteTarget.type === 'service') {
+        <p class="delete-message delete-message--error">{{ 'SETTINGS.DELETE_BLOCKED' | translate:{ type: ('SETTINGS.ENTITY_SERVICE' | translate), name: deleteTarget.name } }}</p>
+      } @else if (deleteTarget.type === 'doctor') {
+        <p class="delete-message delete-message--error">{{ 'SETTINGS.DELETE_BLOCKED' | translate:{ type: ('SETTINGS.ENTITY_DOCTOR' | translate), name: deleteTarget.name } }}</p>
+      } @else if (deleteTarget.type === 'lab') {
+        <p class="delete-message delete-message--error">{{ 'SETTINGS.DELETE_BLOCKED' | translate:{ type: ('SETTINGS.ENTITY_LAB' | translate), name: deleteTarget.name } }}</p>
+      } @else {
+        <p class="delete-message delete-message--error">{{ 'SETTINGS.DELETE_BLOCKED' | translate:{ type: ('SETTINGS.ENTITY_LAB_SERVICE' | translate), name: deleteTarget.name } }}</p>
+      }
+      <p class="delete-hint">
+        @if (deleteTarget.type === 'service' || deleteTarget.type === 'doctor') {
+          {{ 'SETTINGS.DELETE_BLOCKED_MSG_SERVICE' | translate }}
+        } @else {
+          {{ 'SETTINGS.DELETE_BLOCKED_MSG_LAB' | translate }}
+        }
+      </p>
+    </div>
+    <div class="dialog-actions dialog-actions--center">
+      <p-button
+        [label]="'SETTINGS.UNDERSTOOD' | translate"
+        severity="secondary"
+        (onClick)="displayDeleteConfirmDialog = false; deleteTarget = null; deleteBlocked = false"
+      ></p-button>
+    </div>
+  }
+  @if (deleteTarget && !deleteBlocked) {
+    <div class="delete-confirm-content">
+      <div class="delete-icon-warning">
+        <i class="pi pi-question-circle"></i>
+      </div>
+      @if (deleteTarget.type === 'service') {
+        <p class="delete-message">{{ 'SETTINGS.DELETE_QUESTION' | translate:{ type: ('SETTINGS.ENTITY_SERVICE' | translate), name: deleteTarget.name } }}</p>
+      } @else if (deleteTarget.type === 'doctor') {
+        <p class="delete-message">{{ 'SETTINGS.DELETE_QUESTION' | translate:{ type: ('SETTINGS.ENTITY_DOCTOR' | translate), name: deleteTarget.name } }}</p>
+      } @else if (deleteTarget.type === 'lab') {
+        <p class="delete-message">{{ 'SETTINGS.DELETE_QUESTION' | translate:{ type: ('SETTINGS.ENTITY_LAB' | translate), name: deleteTarget.name } }}</p>
+      } @else {
+        <p class="delete-message">{{ 'SETTINGS.DELETE_QUESTION' | translate:{ type: ('SETTINGS.ENTITY_LAB_SERVICE' | translate), name: deleteTarget.name } }}</p>
+      }
+    </div>
+    <div class="dialog-actions">
+      <p-button
+        [label]="'COMMON.CANCEL' | translate"
+        severity="secondary"
+        (onClick)="displayDeleteConfirmDialog = false; deleteTarget = null; deleteBlocked = false"
+      ></p-button>
+      <p-button
+        [label]="'COMMON.DELETE' | translate"
+        severity="danger"
+        (onClick)="executeDelete()"
+      ></p-button>
+    </div>
+  }
+</p-dialog>

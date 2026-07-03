@@ -1,0 +1,324 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+// Page Container
+.settings-page {
+  @include page-container;
+}
+
+// Page Header
+.page-header {
+  @include page-header;
+  margin-bottom: $space-lg;
+
+  h1 {
+    @include rtl(margin-right, 0, auto);
+  }
+}
+
+// Tab Header (Action Bar)
+.tab-header {
+  @include flex-between;
+  margin-bottom: $space-md;
+}
+
+// Section Heading
+.section-heading {
+  @include section-heading;
+  margin-top: $space-lg;
+  padding-bottom: $space-sm;
+  border-bottom: 2px solid var(--surface-border);
+}
+
+// Data Card Wrapper
+.data-card {
+  @include card-base;
+  overflow: hidden;
+
+  .p-datatable {
+    background: transparent;
+    border: none;
+    margin: 0;
+  }
+}
+
+// Table Enhancements
+@include table-enhanced;
+
+:host ::ng-deep {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--surface-50);
+      color: var(--text-secondary);
+      font-weight: $fw-semibold;
+      font-size: $fs-xs;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--surface-border);
+      padding: 12px 16px;
+    }
+
+    .p-datatable-tbody > tr {
+      transition: background $transition-fast;
+
+      &:hover {
+        background: var(--surface-hover);
+      }
+
+      > td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--surface-border);
+        color: var(--text-primary);
+        vertical-align: middle;
+      }
+    }
+
+    .p-datatable-tbody > tr.p-datatable-row-selected {
+      background: var(--primary-50);
+    }
+  }
+}
+
+// Column Widths
+.col-num {
+  width: 60px;
+  text-align: center;
+}
+
+.col-actions {
+  width: 160px;
+  text-align: center;
+}
+
+// Action Buttons
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+}
+
+// Percentage Input (Doctors)
+.percentage-input {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  max-width: 140px;
+
+  input {
+    width: 80px;
+    text-align: center;
+  }
+
+  .percentage-symbol {
+    color: var(--text-secondary);
+    font-weight: $fw-semibold;
+    font-size: $fs-sm;
+  }
+}
+
+// Balance Badges
+.balance-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: $radius-full;
+  font-weight: $fw-semibold;
+  font-size: $fs-sm;
+  white-space: nowrap;
+
+  &.balance-zero {
+    color: $success;
+    background: $success-light;
+  }
+
+  &.balance-positive {
+    color: $danger;
+    background: $danger-light;
+  }
+
+  &.balance-warning {
+    color: $warning;
+    background: $warning-light;
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: $space-xl !important;
+}
+
+// Input Enhancements
+@include input-enhanced;
+
+// Button Enhancements
+@include button-enhanced;
+
+// Dialog Enhancements
+@include dialog-enhanced;
+
+// Dialog Styles
+.dialog-field {
+  margin-bottom: $space-md;
+
+  label {
+    display: block;
+    margin-bottom: $space-xs;
+    font-weight: $fw-semibold;
+    font-size: $fs-sm;
+    color: var(--text-primary);
+  }
+
+  .w-full {
+    width: 100%;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-sm;
+  margin-top: $space-lg;
+  padding-top: $space-md;
+  border-top: 1px solid var(--surface-border);
+
+  &--center {
+    justify-content: center;
+  }
+}
+
+// Delete Dialog
+.delete-dialog {
+  .delete-confirm-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-md;
+    padding: $space-md 0;
+  }
+
+  .delete-icon-blocked {
+    width: 64px;
+    height: 64px;
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $danger-light;
+
+    i {
+      font-size: 32px;
+      color: $danger;
+    }
+  }
+
+  .delete-icon-warning {
+    width: 64px;
+    height: 64px;
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $warning-light;
+
+    i {
+      font-size: 32px;
+      color: $warning;
+    }
+  }
+
+  .delete-message {
+    text-align: center;
+    font-weight: $fw-semibold;
+    color: var(--text-primary);
+    font-size: $fs-base;
+    line-height: 1.6;
+    margin: 0;
+
+    &--error {
+      color: $danger;
+    }
+  }
+
+  .delete-hint {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: $fs-sm;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 360px;
+  }
+}
+
+// Tabs Styling
+:host ::ng-deep {
+  .p-tabs {
+    .p-tablist {
+      border-bottom: 2px solid var(--surface-border);
+      margin-bottom: $space-md;
+    }
+
+    .p-tab {
+      font-weight: $fw-semibold;
+      padding: $space-sm $space-md;
+      transition: color $transition-fast;
+
+      &.p-tab-active {
+        color: var(--primary-600);
+        border-bottom: 2px solid var(--primary-600);
+        margin-bottom: -2px;
+      }
+    }
+
+    .p-tabpanels {
+      padding: $space-md 0 0 0;
+    }
+
+    .p-tabpanel {
+      padding: 0;
+    }
+  }
+}
+
+// Table Striped Rows
+:host ::ng-deep {
+  .p-datatable-striped {
+    .p-datatable-tbody > tr:nth-child(even) > td {
+      background: var(--surface-50);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .tab-header {
+    flex-wrap: wrap;
+    gap: $space-sm;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: $space-xs;
+  }
+
+  .col-actions {
+    width: auto;
+  }
+}
+
+// Animation
+.settings-page {
+  @include fade-in;
+}
+
+// Margins
+.mb-4 {
+  margin-bottom: $space-md;
+}

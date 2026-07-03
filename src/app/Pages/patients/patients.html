@@ -1,0 +1,434 @@
+<div class="patients-page">
+  <div class="page-header">
+    <div class="page-header__title">
+      <h2>{{ 'PATIENTS.TITLE' | translate }}</h2>
+    </div>
+    <div class="page-header__actions">
+      <button pButton icon="pi pi-plus" [label]="'PATIENTS.ADD_NEW' | translate" class="p-button-primary" (onClick)="openNewDialog()"></button>
+    </div>
+  </div>
+
+  <div class="patients-card">
+    <p-table
+      [value]="filteredPatients"
+      [paginator]="true"
+      [rows]="10"
+      [rowHover]="true"
+      [tableStyle]="{ 'min-width': '70rem' }"
+      styleClass="patients-table"
+    >
+      <ng-template #header>
+        <tr>
+          <th style="width: 60px">#</th>
+          <th>{{ 'PATIENTS.NAME' | translate }}</th>
+          <th style="width: 80px">{{ 'PATIENTS.AGE' | translate }}</th>
+          <th>{{ 'PATIENTS.PHONE' | translate }}</th>
+          <th>{{ 'PATIENTS.REG_DATE' | translate }}</th>
+          <th>{{ 'PATIENTS.NOTES' | translate }}</th>
+          <th style="width: 200px">{{ 'PATIENTS.ACTIONS' | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-patient>
+        <tr class="patient-row">
+          <td class="patient-id">{{ patient.id }}</td>
+          <td class="patient-name">{{ patient.name }}</td>
+          <td>{{ patient.age }}</td>
+          <td class="patient-phone">{{ patient.phone }}</td>
+          <td>{{ patient.registrationDate | date: 'yyyy/MM/dd' }}</td>
+          <td class="patient-notes">{{ patient.notes }}</td>
+          <td>
+            <div class="action-buttons">
+              <button
+                pButton
+                icon="pi pi-pencil"
+                [label]="'PATIENTS.EDIT' | translate"
+                class="p-button-sm p-button-outlined p-button-warning"
+                (onClick)="openEditDialog(patient)"
+              ></button>
+              <button
+                pButton
+                icon="pi pi-wallet"
+                [label]="'PATIENTS.STATEMENT' | translate"
+                class="p-button-sm p-button-outlined p-button-info"
+                (onClick)="openStatement(patient)"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="7" class="empty-state">
+            <div class="empty-state__icon">
+              <i class="pi pi-users"></i>
+            </div>
+            <span>{{ 'PATIENTS.NO_PATIENTS' | translate }}</span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog
+  [header]="(selectedPatient ? 'PATIENTS.EDIT_TITLE' : 'PATIENTS.ADD_TITLE') | translate"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [style]="{ width: '580px' }"
+  styleClass="patient-dialog"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="patientForm" (ngSubmit)="savePatient()" class="patient-form">
+    <div class="form-section">
+      <div class="form-field">
+        <label for="name" class="form-label">{{ 'PATIENTS.NAME' | translate }} *</label>
+        <input id="name" type="text" pInputText formControlName="name" class="form-input" />
+        @if (patientForm.get('name')?.invalid && patientForm.get('name')?.touched) {
+          <small class="form-error">{{ 'PATIENTS.NAME_REQUIRED' | translate }}</small>
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-field form-field--half">
+          <label for="age" class="form-label">{{ 'PATIENTS.AGE' | translate }}</label>
+          <input id="age" type="number" pInputText formControlName="age" class="form-input" />
+        </div>
+
+        <div class="form-field form-field--half">
+          <label for="phone" class="form-label">{{ 'PATIENTS.PHONE' | translate }} *</label>
+          <input id="phone" type="text" pInputText formControlName="phone" class="form-input" />
+          @if (patientForm.get('phone')?.invalid && patientForm.get('phone')?.touched) {
+            <small class="form-error">{{ 'PATIENTS.PHONE_REQUIRED' | translate }}</small>
+          }
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="registrationDate" class="form-label">{{ 'PATIENTS.REG_DATE' | translate }}</label>
+        <p-datepicker
+          id="registrationDate"
+          formControlName="registrationDate"
+          dateFormat="yy/mm/dd"
+          [showIcon]="true"
+          styleClass="form-input"
+        ></p-datepicker>
+      </div>
+
+      <div class="form-field">
+        <label for="notes" class="form-label">{{ 'PATIENTS.NOTES' | translate }}</label>
+        <textarea id="notes" pInputTextarea formControlName="notes" class="form-input" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="form-divider"></div>
+
+    <div class="form-section">
+      <h5 class="form-section-title">
+        {{ (selectedPatient ? 'PATIENTS.EDIT_APPOINTMENT_SECTION' : 'PATIENTS.APPOINTMENT_SECTION') | translate }}
+      </h5>
+
+      <div class="form-row">
+        <div class="form-field form-field--half">
+          <label for="appointmentDate" class="form-label">{{ 'PATIENTS.APPOINTMENT_DATE' | translate }}</label>
+          <p-datepicker
+            id="appointmentDate"
+            formControlName="appointmentDate"
+            dateFormat="yy/mm/dd"
+            [showIcon]="true"
+            styleClass="form-input"
+          ></p-datepicker>
+        </div>
+
+        <div class="form-field form-field--half">
+          <label for="timeSlot" class="form-label">{{ 'PATIENTS.TIME_SLOT' | translate }}</label>
+          <p-select
+            id="timeSlot"
+            [options]="allTimeSlots"
+            formControlName="timeSlot"
+            [placeholder]="'PATIENTS.TIME_SLOT' | translate"
+            styleClass="form-input"
+          ></p-select>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">{{ 'PATIENTS.SERVICES' | translate }}</label>
+        <div formArrayName="services" class="services-list">
+          @for (service of servicesFormArray.controls; track $index) {
+            <div [formGroupName]="$index" class="service-row">
+              <p-select
+                [options]="doctors"
+                optionLabel="name"
+                optionValue="id"
+                formControlName="doctorId"
+                [placeholder]="'PATIENTS.DOCTOR' | translate"
+                styleClass="service-select"
+              ></p-select>
+              <p-select
+                [options]="serviceOptions"
+                optionLabel="name"
+                optionValue="name"
+                formControlName="serviceName"
+                [placeholder]="'PATIENTS.SERVICE' | translate"
+                styleClass="service-select"
+              ></p-select>
+              <span class="service-price">
+                {{ getServicePrice(service.get('serviceName')?.value) | currency:'EGP ':'symbol':'1.0-0' }}
+              </span>
+              @if ($index > 0 || servicesFormArray.controls.length > 1) {
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-sm p-button-danger p-button-text service-remove"
+                  (onClick)="removeServiceRow($index)"
+                ></button>
+              }
+            </div>
+          }
+        </div>
+        <button
+          pButton
+          icon="pi pi-plus"
+          [label]="'PATIENTS.ADD_SERVICE' | translate"
+          class="p-button-sm p-button-text p-button-secondary add-service-btn"
+          (onClick)="addServiceRow()"
+        ></button>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <button pButton [label]="'PATIENTS.CANCEL' | translate" class="p-button-text p-button-secondary" (onClick)="displayDialog = false" type="button"></button>
+      <button pButton [label]="'PATIENTS.SAVE' | translate" class="p-button-primary" type="submit" [disabled]="patientForm.invalid"></button>
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog
+  [header]="'PATIENTS.STATEMENT_TITLE' | translate"
+  [(visible)]="displayStatement"
+  [modal]="true"
+  [style]="{ width: '780px' }"
+  styleClass="statement-dialog"
+  [draggable]="false"
+  [resizable]="false"
+>
+  @if (statementPatient) {
+    <div class="statement-content">
+      <div class="patient-info-card">
+        <div class="patient-info-item">
+          <span class="info-label">{{ 'PATIENTS.PATIENT_LABEL' | translate }}</span>
+          <span class="info-value">{{ statementPatient.name }}</span>
+        </div>
+        <div class="patient-info-item">
+          <span class="info-label">{{ 'PATIENTS.PHONE_LABEL' | translate }}</span>
+          <span class="info-value">{{ statementPatient.phone }}</span>
+        </div>
+      </div>
+
+      <div class="stat-cards">
+        <div class="stat-card stat-card--billed">
+          <div class="stat-card__label">{{ 'PATIENTS.TOTAL_BILLED' | translate }}</div>
+          <div class="stat-card__value">{{ totalBilled | currency:'EGP ':'symbol':'1.0-0' }}</div>
+        </div>
+        <div class="stat-card stat-card--paid">
+          <div class="stat-card__label">{{ 'PATIENTS.PAID' | translate }}</div>
+          <div class="stat-card__value stat-card__value--paid">{{ totalPaid | currency:'EGP ':'symbol':'1.0-0' }}</div>
+        </div>
+        <div class="stat-card stat-card--remaining">
+          <div class="stat-card__label">{{ 'PATIENTS.REMAINING' | translate }}</div>
+          <div class="stat-card__value stat-card__value--remaining">{{ totalDebt | currency:'EGP ':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+
+      @for (inv of patientInvoices; track inv.id) {
+        <div class="invoice-block">
+          <h6 class="invoice-header">{{ 'PATIENTS.INVOICES' | translate }} #{{ inv.id }} - {{ inv.date | date: 'yyyy/MM/dd' }}</h6>
+          <p-table [value]="inv.services" styleClass="invoice-table">
+            <ng-template #header>
+              <tr>
+                <th>{{ 'PATIENTS.SERVICE_LABEL' | translate }}</th>
+                <th>{{ 'PATIENTS.DOCTOR_LABEL' | translate }}</th>
+                <th>{{ 'PATIENTS.PRICE_LABEL' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-svc>
+              <tr>
+                <td>{{ svc.serviceName }}</td>
+                <td>{{ svc.doctorName }}</td>
+                <td>{{ svc.price | currency:'EGP ':'symbol':'1.0-0' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          @if (inv.payments && inv.payments.length > 0) {
+            <div class="payment-history">
+              <strong class="payment-history__title">{{ 'PATIENTS.PAYMENT_HISTORY' | translate }}</strong>
+              @for (pmt of inv.payments; track $index) {
+                <div class="payment-item">
+                  <span class="payment-item__date">{{ pmt.date | date: 'yyyy/MM/dd hh:mm a' }}</span>
+                  <span class="payment-item__amount">{{ pmt.amount | currency:'EGP ':'symbol':'1.0-0' }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="invoice-summary">
+            <div class="invoice-summary__item">
+              <span>{{ 'PATIENTS.TOTAL' | translate }}</span>
+              <strong>{{ inv.totalAmount | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+            </div>
+            <div class="invoice-summary__item invoice-summary__item--paid">
+              <span>{{ 'PATIENTS.PAID_LABEL' | translate }}</span>
+              <strong>{{ inv.paidAmount | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+            </div>
+            <div class="invoice-summary__item invoice-summary__item--remaining">
+              <span>{{ 'PATIENTS.REMAINING_LABEL' | translate }}</span>
+              <strong>{{ inv.remainingAmount | currency:'EGP ':'symbol':'1.0-0' }}</strong>
+            </div>
+            <div class="invoice-summary__item">
+              <span>{{ 'PATIENTS.STATUS' | translate }}</span>
+              <strong>{{ inv.status }}</strong>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (patientInvoices.length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <i class="pi pi-file"></i>
+          </div>
+          <span>{{ 'PATIENTS.NO_INVOICES' | translate }}</span>
+        </div>
+      }
+
+      <div class="section-heading">
+        <h5>{{ 'PATIENTS.LAB_ORDERS' | translate }}</h5>
+      </div>
+
+      @let labOrders = getPatientLabOrders(statementPatient.id);
+      @if (labOrders.length > 0) {
+        <p-table [value]="labOrders" styleClass="lab-table">
+          <ng-template #header>
+            <tr>
+              <th>{{ 'PATIENTS.DATE' | translate }}</th>
+              <th>{{ 'PATIENTS.LAB' | translate }}</th>
+              <th>{{ 'PATIENTS.SERVICE_LABEL' | translate }}</th>
+              <th>{{ 'PATIENTS.UNITS' | translate }}</th>
+              <th>{{ 'PATIENTS.TOTAL' | translate }}</th>
+              <th>{{ 'PATIENTS.LAB_STATUS' | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-order>
+            <tr>
+              <td>{{ order.date | date:'yyyy/MM/dd' }}</td>
+              <td>{{ order.labName }}</td>
+              <td>{{ order.serviceName }}</td>
+              <td>{{ order.units }}</td>
+              <td>{{ order.totalCost | currency:'EGP ':'symbol':'1.0-0' }}</td>
+              <td>
+                <p-tag
+                  [value]="order.status"
+                  [severity]="order.status === 'تم الاستلام' ? 'success' : 'warn'"
+                ></p-tag>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      } @else {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <i class="pi pi-box"></i>
+          </div>
+          <span>{{ 'PATIENTS.NO_LAB_ORDERS' | translate }}</span>
+        </div>
+      }
+
+      <div class="lab-payment-action">
+        <button
+          pButton
+          icon="pi pi-credit-card"
+          [label]="'PATIENTS.PAY_LAB' | translate"
+          class="p-button-info p-button-outlined"
+          (onClick)="openLabPaymentDialog(statementPatient)"
+        ></button>
+      </div>
+
+      @let labPayments = getPatientLabPayments(statementPatient.id);
+      @if (labPayments.length > 0) {
+        <h6 class="sub-heading">{{ 'PATIENTS.LAB_PAYMENTS' | translate }}</h6>
+        <p-table [value]="labPayments" styleClass="lab-payments-table">
+          <ng-template #header>
+            <tr>
+              <th>{{ 'PATIENTS.DATE' | translate }}</th>
+              <th>{{ 'PATIENTS.LAB' | translate }}</th>
+              <th>{{ 'PATIENTS.AMOUNT' | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-pmt>
+            <tr>
+              <td>{{ pmt.date | date:'yyyy/MM/dd hh:mm a' }}</td>
+              <td>{{ pmt.labName }}</td>
+              <td class="amount-cell">{{ pmt.amount | currency:'EGP ':'symbol':'1.0-0' }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </div>
+
+    <div class="dialog-footer">
+      <button pButton [label]="'PATIENTS.CLOSE' | translate" class="p-button-text p-button-secondary" (onClick)="displayStatement = false" type="button"></button>
+    </div>
+  }
+</p-dialog>
+
+<p-dialog
+  [header]="'PATIENTS.PAY_LAB_TITLE' | translate"
+  [(visible)]="displayLabPaymentDialog"
+  [modal]="true"
+  [style]="{ width: '440px' }"
+  styleClass="lab-payment-dialog"
+  [draggable]="false"
+  [resizable]="false"
+>
+  @if (statementPatient) {
+    <div class="lab-payment-form">
+      <div class="form-field">
+        <label class="form-label">{{ 'PATIENTS.PATIENT_LABEL' | translate }}</label>
+        <div class="form-value">{{ statementPatient.name }}</div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">{{ 'PATIENTS.LAB' | translate }}</label>
+        <p-select
+          [options]="labs"
+          optionLabel="name"
+          [(ngModel)]="selectedLabForPayment"
+          [placeholder]="'PATIENTS.SELECT_LAB' | translate"
+          styleClass="form-input"
+        ></p-select>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">{{ 'PATIENTS.PAYMENT_AMOUNT' | translate }}</label>
+        <p-inputNumber
+          [(ngModel)]="labPaymentAmount"
+          [min]="1"
+          styleClass="form-input"
+        ></p-inputNumber>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <button pButton [label]="'PATIENTS.CANCEL' | translate" class="p-button-text p-button-secondary" (onClick)="displayLabPaymentDialog = false" type="button"></button>
+      <button
+        pButton
+        [label]="'PATIENTS.CONFIRM_PAY' | translate"
+        class="p-button-info"
+        (onClick)="confirmLabPayment()"
+        [disabled]="!selectedLabForPayment || !labPaymentAmount || labPaymentAmount <= 0"
+      ></button>
+    </div>
+  }
+</p-dialog>

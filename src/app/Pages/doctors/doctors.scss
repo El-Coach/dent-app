@@ -1,0 +1,385 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+.doctors-page {
+  @include page-container;
+  @include fade-in;
+
+  .page-header {
+    @include page-header;
+  }
+}
+
+.doctors-table {
+  @include table-enhanced;
+
+  .doctor-row {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+  }
+
+  .id-cell {
+    color: var(--text-secondary);
+    font-weight: $fw-medium;
+  }
+
+  .name-cell {
+    .doctor-name {
+      font-weight: $fw-semibold;
+      color: var(--text-primary);
+    }
+  }
+
+  .phone-cell {
+    color: var(--text-secondary);
+    font-family: $font-mono;
+    direction: ltr;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: $space-xl 0;
+
+    .empty-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $space-sm;
+      color: var(--text-secondary);
+
+      .empty-icon {
+        font-size: 3rem;
+        opacity: 0.4;
+      }
+    }
+  }
+}
+
+.working-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-xs;
+
+  .day-badge {
+    @include status-badge($info);
+    padding: 2px 8px;
+    font-size: $fs-xs;
+    background: var(--surface-100);
+    color: var(--text-secondary);
+
+    strong {
+      color: var(--text-primary);
+      font-weight: $fw-semibold;
+    }
+  }
+}
+
+.specialty-tag {
+  .p-tag {
+    border-radius: $radius-full;
+    font-size: $fs-xs;
+    font-weight: $fw-semibold;
+    padding: 2px 10px;
+  }
+}
+
+@include dialog-enhanced;
+
+.doctor-profile-dialog,
+.patient-info-dialog {
+  .info-section {
+    padding: 0;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-md;
+    margin-bottom: $space-md;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+
+    .info-label {
+      font-size: $fs-sm;
+      color: var(--text-secondary);
+      font-weight: $fw-medium;
+    }
+
+    .info-value {
+      font-size: $fs-base;
+      color: var(--text-primary);
+      font-weight: $fw-semibold;
+    }
+  }
+
+  .section-title {
+    @include section-heading;
+    margin-top: $space-md;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $space-md;
+    margin-bottom: $space-md;
+  }
+
+  .stat-card {
+    @include stat-card($info);
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+
+    &.stat-services {
+      @include stat-card($info);
+    }
+
+    &.stat-revenue {
+      @include stat-card($success);
+    }
+
+    &.stat-share {
+      @include stat-card($primary-600);
+    }
+
+    &.stat-total {
+      @include stat-card($gray-500);
+    }
+
+    &.stat-paid {
+      @include stat-card($success);
+    }
+
+    &.stat-remaining {
+      @include stat-card($danger);
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: $fs-lg;
+    }
+
+    .stat-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .stat-label {
+      font-size: $fs-xs;
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+
+    .stat-value {
+      font-size: $fs-xl;
+      font-weight: $fw-bold;
+      color: var(--text-primary);
+
+      &.revenue-value {
+        color: $success;
+      }
+
+      &.share-value {
+        color: $primary-600;
+      }
+
+      &.paid-value {
+        color: $success;
+      }
+
+      &.remaining-value {
+        color: $danger;
+      }
+    }
+  }
+
+  .settle-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: $space-md;
+  }
+
+  .settle-message {
+    display: block;
+    margin-bottom: $space-md;
+  }
+
+  .services-table-container {
+    margin-top: $space-md;
+  }
+
+  .services-table {
+    @include table-enhanced;
+
+    .patient-link {
+      cursor: pointer;
+      color: $primary-600;
+      font-weight: $fw-bold;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        color: $primary-700;
+      }
+    }
+
+    .price-cell {
+      font-weight: $fw-semibold;
+      color: var(--text-primary);
+      direction: ltr;
+      text-align: end;
+    }
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: $space-md;
+    padding-top: $space-md;
+    border-top: 1px solid var(--surface-border);
+  }
+}
+
+.patient-info-dialog {
+  .patient-details {
+    margin-bottom: $space-md;
+  }
+
+  .medical-notes {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger);
+    border-radius: $radius;
+    padding: $space-sm $space;
+    margin-top: $space-md;
+
+    strong {
+      color: var(--danger);
+    }
+
+    p {
+      color: var(--danger);
+      margin: $space-xs 0 0;
+    }
+  }
+
+  .invoices-list {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  .invoice-card {
+    @include card-base;
+    padding: $space;
+    border-radius: $radius;
+
+    .invoice-header {
+      @include flex-between;
+      margin-bottom: $space-sm;
+
+      .invoice-title {
+        font-weight: $fw-semibold;
+        color: var(--text-primary);
+      }
+
+      .invoice-status {
+        font-size: $fs-xs;
+        font-weight: $fw-semibold;
+        padding: 2px 10px;
+        border-radius: $radius-full;
+
+        &.paid {
+          @include status-badge($success);
+        }
+
+        &.partial {
+          @include status-badge($danger);
+        }
+      }
+    }
+
+    .invoice-services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $space-xs;
+      margin-bottom: $space-sm;
+      color: var(--text-secondary);
+      font-size: $fs-sm;
+    }
+
+    .payments-section {
+      margin-bottom: $space-sm;
+
+      .payments-title {
+        font-size: $fs-xs;
+        font-weight: $fw-bold;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: $space-xs;
+      }
+    }
+
+    .payment-item {
+      @include flex-between;
+      background: var(--success-bg);
+      padding: $space-xs $space-sm;
+      border-radius: $radius-sm;
+      margin-bottom: 2px;
+      font-size: $fs-xs;
+
+      .payment-date {
+        color: var(--text-secondary);
+      }
+
+      .payment-amount {
+        color: var(--success);
+        font-weight: $fw-bold;
+      }
+    }
+
+    .invoice-footer {
+      @include flex-between;
+      padding-top: $space-sm;
+      border-top: 1px solid var(--surface-border);
+      font-size: $fs-sm;
+
+      .remaining-value {
+        color: $danger;
+      }
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: $space-xl 0;
+
+    .empty-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $space-sm;
+      color: var(--text-secondary);
+
+      .empty-icon {
+        font-size: 3rem;
+        opacity: 0.4;
+      }
+    }
+  }
+}
+
+@include button-enhanced;

@@ -1,0 +1,388 @@
+<div class="billing-page">
+  <div class="page-header">
+    <div>
+      <h1>{{ 'BILLING.TITLE' | translate }}</h1>
+    </div>
+  </div>
+
+  <div class="safe-overview">
+    <div class="safe-card opening">
+      <div class="safe-card-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="safe-card-content">
+        <span class="safe-card-label">{{ 'BILLING.SAFE_OPENING' | translate }}</span>
+        <span class="safe-card-value blue">{{ remainingFloat | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="safe-card total">
+      <div class="safe-card-icon success">
+        <mat-icon>payments</mat-icon>
+      </div>
+      <div class="safe-card-content">
+        <span class="safe-card-label">{{ 'BILLING.SAFE_TOTAL' | translate }}</span>
+        <span class="safe-card-value green">{{ (remainingFloat + netProfit) | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="safe-card reconcile">
+      <div class="safe-card-icon warning">
+        <mat-icon>lock</mat-icon>
+      </div>
+      <div class="safe-card-content">
+        <span class="safe-card-label">{{ 'BILLING.SAFE_RECONCILE' | translate }}</span>
+        <p-button
+          [label]="'BILLING.CLOSE_SAFE' | translate"
+          icon="pi pi-lock"
+          severity="warn"
+          (onClick)="openClosureDialog()"
+        ></p-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label class="filter-label">{{ 'BILLING.VIEW_BY' | translate }}</label>
+      <p-selectbutton
+        [options]="filterModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="filterMode"
+        (onChange)="onFilterModeChange()"
+      />
+    </div>
+    <div class="filter-group">
+      <p-datepicker
+        [(ngModel)]="selectedFilterDate"
+        (onSelect)="onFilterDateChange()"
+        [view]="filterMode === 'month' ? 'month' : 'date'"
+        dateFormat="yy/mm/dd"
+        [showIcon]="true"
+        [showButtonBar]="true"
+      />
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <mat-icon>trending_up</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'BILLING.TOTAL_INCOME' | translate }}</span>
+        <span class="stat-value green">{{ totalIncomes | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon red">
+        <mat-icon>trending_down</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'BILLING.TOTAL_EXPENSES' | translate }}</span>
+        <span class="stat-value red">{{ totalExpensesAmount | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" [ngClass]="netProfit >= 0 ? 'green' : 'red'">
+        <mat-icon>show_chart</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ 'BILLING.NET_PROFIT' | translate }}</span>
+        <span class="stat-value" [ngClass]="netProfit >= 0 ? 'green' : 'red'">
+          {{ netProfit | currency:'EGP ':'symbol':'1.0-0' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <p-tabs [value]="'incomes'">
+      <p-tablist>
+        <p-tab value="incomes">{{ 'BILLING.INVOICES_TAB' | translate }}</p-tab>
+        <p-tab value="expenses">{{ 'BILLING.EXPENSES_TAB' | translate }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="incomes">
+          <div class="tab-actions">
+            <p-button [label]="'BILLING.COLLECT_PAYMENT' | translate" icon="pi pi-plus" (onClick)="openPaymentDialog(filteredInvoices[0])" [disabled]="filteredInvoices.length === 0"></p-button>
+          </div>
+          <div class="table-wrapper">
+            <p-table [value]="filteredInvoices" styleClass="billing-table" [tableStyle]="{ 'min-width': '700px' }">
+              <ng-template #header>
+                <tr>
+                  <th>#</th>
+                  <th>{{ 'BILLING.PATIENT' | translate }}</th>
+                  <th>{{ 'BILLING.SERVICES' | translate }}</th>
+                  <th>{{ 'BILLING.TOTAL' | translate }}</th>
+                  <th>{{ 'BILLING.PAID' | translate }}</th>
+                  <th>{{ 'BILLING.REMAINING' | translate }}</th>
+                  <th>{{ 'BILLING.STATUS' | translate }}</th>
+                  <th>{{ 'BILLING.ACTIONS' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-invoice>
+                <tr>
+                  <td class="cell-id">{{ invoice.id }}</td>
+                  <td class="cell-patient">{{ invoice.patientName }}</td>
+                  <td>
+                    <div class="services-list">
+                      @for (svc of invoice.services; track $index) {
+                        <div class="service-item">
+                          <p-tag [value]="svc.serviceName" severity="info" styleClass="mr-1" />
+                          <span class="service-detail">{{ svc.doctorName }} - {{ svc.price | currency:'EGP ':'symbol':'1.0-0' }}</span>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td class="cell-amount">{{ invoice.totalAmount | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                  <td class="cell-amount green">{{ invoice.paidAmount | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                  <td class="cell-amount red">{{ invoice.remainingAmount | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                  <td>
+                    <p-tag [value]="invoice.status" [severity]="getStatusSeverity(invoice.status)" />
+                  </td>
+                  <td>
+                    @if (invoice.status !== 'مدفوع بالكامل') {
+                      <p-button [label]="'BILLING.COLLECT_PAYMENT' | translate" severity="success" size="small" (onClick)="openPaymentDialog(invoice)"></p-button>
+                    }
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template #emptymessage>
+                <tr>
+                  <td colspan="8" class="empty-message">
+                    <div class="empty-state">
+                      <mat-icon>inbox</mat-icon>
+                      <span>{{ 'BILLING.NO_INVOICES' | translate }}</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+        <p-tabpanel value="expenses">
+          <div class="tab-actions">
+            <p-button [label]="'BILLING.ADD_EXPENSE' | translate" icon="pi pi-plus" (onClick)="openExpenseDialog()"></p-button>
+          </div>
+          <div class="table-wrapper">
+            <p-table [value]="filteredExpenses" styleClass="billing-table" [tableStyle]="{ 'min-width': '500px' }">
+              <ng-template #header>
+                <tr>
+                  <th>#</th>
+                  <th>{{ 'BILLING.EXPENSE_DESC' | translate }}</th>
+                  <th>{{ 'BILLING.CATEGORY' | translate }}</th>
+                  <th>{{ 'BILLING.AMOUNT' | translate }}</th>
+                  <th>{{ 'BILLING.DATE' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-expense>
+                <tr>
+                  <td class="cell-id">{{ expense.id }}</td>
+                  <td>{{ expense.description }}</td>
+                  <td>
+                    <p-tag [value]="expense.category" severity="contrast" />
+                  </td>
+                  <td class="cell-amount red">{{ expense.amount | currency:'EGP ':'symbol':'1.0-0' }}</td>
+                  <td>{{ expense.date | date:'yyyy/MM/dd' }}</td>
+                </tr>
+              </ng-template>
+              <ng-template #emptymessage>
+                <tr>
+                  <td colspan="5" class="empty-message">
+                    <div class="empty-state">
+                      <mat-icon>inbox</mat-icon>
+                      <span>{{ 'BILLING.NO_EXPENSES' | translate }}</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+
+<p-dialog
+  [header]="'BILLING.PAYMENT_TITLE' | translate"
+  [(visible)]="displayPaymentDialog"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  styleClass="billing-dialog"
+>
+  @if (selectedInvoice) {
+    <div class="dialog-body">
+      <div class="payment-summary">
+        <div class="summary-row">
+          <span class="summary-label">{{ 'BILLING.PATIENT_LABEL' | translate }}</span>
+          <span class="summary-value">{{ selectedInvoice.patientName }}</span>
+        </div>
+        <div class="summary-section">
+          <span class="summary-label">{{ 'BILLING.SERVICES_LABEL' | translate }}</span>
+          <ul class="services-detail-list">
+            @for (svc of selectedInvoice.services; track $index) {
+              <li>{{ svc.serviceName }} - {{ svc.doctorName }} ({{ svc.price | currency:'EGP ':'symbol':'1.0-0' }})</li>
+            }
+          </ul>
+        </div>
+        <div class="summary-row highlight">
+          <span class="summary-label">{{ 'BILLING.REMAINING_LABEL' | translate }}</span>
+          <span class="summary-value red">{{ selectedInvoice.remainingAmount | currency:'EGP ':'symbol':'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="paymentAmount" class="form-label">{{ 'BILLING.PAYMENT_AMOUNT' | translate }}</label>
+        <input
+          id="paymentAmount"
+          type="number"
+          pInputText
+          [(ngModel)]="paymentAmount"
+          [min]="1"
+          [max]="selectedInvoice.remainingAmount"
+          class="w-full"
+          (keypress)="filterInput($event)"
+        />
+      </div>
+    </div>
+
+    <ng-template #footer>
+      <div class="dialog-footer">
+        <p-button [label]="'COMMON.CANCEL' | translate" severity="secondary" (onClick)="displayPaymentDialog = false"></p-button>
+        <p-button [label]="'BILLING.CONFIRM_SAVE' | translate" severity="success" (onClick)="confirmPayment()"></p-button>
+      </div>
+    </ng-template>
+  }
+</p-dialog>
+
+<p-dialog
+  [header]="'BILLING.EXPENSE_TITLE' | translate"
+  [(visible)]="displayExpenseDialog"
+  [modal]="true"
+  [style]="{ width: '480px' }"
+  styleClass="billing-dialog"
+>
+  <form [formGroup]="expenseForm" (ngSubmit)="saveExpense()">
+    <div class="dialog-body">
+      <div class="form-field">
+        <label for="expenseDesc" class="form-label">{{ 'BILLING.EXPENSE_DESC' | translate }}</label>
+        <input id="expenseDesc" type="text" pInputText formControlName="description" class="w-full" />
+        @if (expenseForm.get('description')?.invalid && expenseForm.get('description')?.touched) {
+          <small class="form-error">{{ 'BILLING.REQUIRED_FIELD' | translate }}</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="expenseAmount" class="form-label">{{ 'BILLING.AMOUNT' | translate }}</label>
+        <input
+          id="expenseAmount"
+          type="number"
+          pInputText
+          formControlName="amount"
+          min="1"
+          class="w-full"
+          (keypress)="filterInput($event)"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="expenseCategory" class="form-label">{{ 'BILLING.CATEGORY' | translate }}</label>
+        <p-select
+          id="expenseCategory"
+          [options]="categoryOptions"
+          formControlName="category"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="'BILLING.SELECT_CATEGORY' | translate"
+          class="w-full"
+          styleClass="w-full"
+        ></p-select>
+      </div>
+
+      <div class="form-field">
+        <label for="expenseDate" class="form-label">{{ 'BILLING.DATE' | translate }}</label>
+        <p-datepicker
+          id="expenseDate"
+          formControlName="date"
+          dateFormat="yy/mm/dd"
+          [showIcon]="true"
+          styleClass="w-full"
+        ></p-datepicker>
+      </div>
+    </div>
+
+    <ng-template #footer>
+      <div class="dialog-footer">
+        <p-button [label]="'COMMON.CANCEL' | translate" severity="secondary" (onClick)="displayExpenseDialog = false"></p-button>
+        <p-button [label]="'COMMON.SAVE' | translate" type="submit" [disabled]="expenseForm.invalid"></p-button>
+      </div>
+    </ng-template>
+  </form>
+</p-dialog>
+
+<p-dialog
+  [header]="'BILLING.CLOSURE_TITLE' | translate"
+  [(visible)]="displayClosureDialog"
+  [modal]="true"
+  [style]="{ width: '560px' }"
+  styleClass="billing-dialog"
+>
+  <div class="dialog-body">
+    <h3 class="closure-heading">{{ 'BILLING.CLOSURE_HEADING' | translate }}</h3>
+
+    <div class="closure-grid">
+      <div class="closure-item blue">
+        <span class="closure-label">{{ 'BILLING.OPENING_BALANCE' | translate }}</span>
+        <span class="closure-value blue">{{ closureSummary.openingBalance | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+
+      <div class="closure-item green">
+        <span class="closure-label">{{ 'BILLING.TOTAL_REVENUE_COLLECTED' | translate }}</span>
+        <span class="closure-value green">{{ closureSummary.totalRevenue | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+
+      <div class="closure-item red">
+        <span class="closure-label">{{ 'BILLING.GENERAL_EXPENSES' | translate }}</span>
+        <span class="closure-value red">{{ closureSummary.generalExpenses | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+
+      <div class="closure-item orange">
+        <span class="closure-label">{{ 'BILLING.LAB_EXPENSES' | translate }}</span>
+        <span class="closure-value orange">{{ closureSummary.labExpenses | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="closure-summary-box">
+      <span class="closure-label">{{ 'BILLING.NET_CASH' | translate }}</span>
+      <span class="closure-total">{{ closureSummary.netAmount | currency:'EGP ':'symbol':'1.0-0' }}</span>
+      <span class="closure-formula">{{ 'BILLING.FORMULA' | translate }}</span>
+    </div>
+
+    <div class="form-field">
+      <label for="remainingFloat" class="form-label">{{ 'BILLING.REMAINING_FLOAT' | translate }}</label>
+      <input
+        id="remainingFloat"
+        type="number"
+        pInputText
+        [(ngModel)]="closureRemainingFloat"
+        min="0"
+        class="w-full"
+        (keypress)="filterInput($event)"
+      />
+      <small class="form-help">{{ 'BILLING.FLOAT_HELP' | translate }}</small>
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <div class="dialog-footer">
+      <p-button [label]="'COMMON.CANCEL' | translate" severity="secondary" (onClick)="displayClosureDialog = false"></p-button>
+      <p-button [label]="'BILLING.CONFIRM_CLOSE' | translate" severity="warn" (onClick)="confirmClosure()"></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
